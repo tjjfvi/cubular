@@ -17,7 +17,7 @@ pub trait Scramble: Cube + Sized {
         1 => Axis::Y,
         _ => Axis::Z,
       };
-      let amount = rng.gen_range(1..3);
+      let amount = rng.gen_range(1..=3);
       self.apply_move(center, axis, amount);
     }
   }

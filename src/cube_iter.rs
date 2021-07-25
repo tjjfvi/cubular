@@ -9,6 +9,10 @@ impl<'a, C: Cube> Iterator for CubeIter<'a, C> {
   type Item = (Pos, N);
   fn next(&mut self) -> Option<Self::Item> {
     let size = self.cube.size();
+    if self.pos.2 == size.2 {
+      return None;
+    }
+    let result = Some((self.pos, self.cube.get(self.pos)));
     self.pos.0 += 1;
     if self.pos.0 >= size.0 {
       self.pos.0 = 0;
@@ -16,13 +20,9 @@ impl<'a, C: Cube> Iterator for CubeIter<'a, C> {
       if self.pos.1 >= size.1 {
         self.pos.1 = 0;
         self.pos.2 += 1;
-        if self.pos.2 >= size.2 {
-          self.pos.2 = size.2;
-          return None;
-        }
       }
     }
-    Some((self.pos, self.cube.get(self.pos)))
+    result
   }
   fn size_hint(&self) -> (usize, Option<usize>) {
     let size = self.cube.size();

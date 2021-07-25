@@ -1,6 +1,6 @@
 use std::ops::{Add, Index, IndexMut, Sub};
 
-#[derive(Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub struct Pos(pub usize, pub usize, pub usize);
 
 impl Add for Pos {

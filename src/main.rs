@@ -27,12 +27,7 @@ pub(crate) use slice::*;
 pub(crate) use swap_axes::*;
 
 fn main() {
-  println!(
-    "{}",
-    DisplayCube::from(
-      RootCube::solved()
-        .slice(Pos(5, 0, 0), Pos(4, 4, 4))
-        .shift(N(4))
-    )
-  );
+  let mut cube = RootCube::solved();
+  cube.scramble(1000);
+  println!("{}", DisplayCube::from(cube));
 }
