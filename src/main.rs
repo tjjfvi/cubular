@@ -1,13 +1,12 @@
-use crate::{cube::FullCube, pos::Pos};
+use crate::{cube::DisplayCube, root_cube::RootCube};
 
 mod cube;
 mod n;
 mod pos;
-mod transform;
+mod root_cube;
+mod shift;
+mod slice;
 
 fn main() {
-  println!(
-    "{}",
-    FullCube::solved().slice().slice(Pos(1, 2, 3), Pos(3, 3, 3))
-  );
+  println!("{}", DisplayCube::from(RootCube::solved()));
 }
