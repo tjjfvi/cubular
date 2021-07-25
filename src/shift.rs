@@ -1,4 +1,4 @@
-use crate::{cube::Cube, n::N, pos::Pos};
+use crate::*;
 
 pub struct Shift<C: Cube> {
   pub cube: C,

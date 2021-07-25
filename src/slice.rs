@@ -1,4 +1,4 @@
-use crate::{cube::Cube, pos::Pos};
+use crate::*;
 
 pub struct Slice<C: Cube> {
   pub cube: C,

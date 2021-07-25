@@ -1,4 +1,4 @@
-use crate::{cube::Cube, n::N, pos::Pos};
+use crate::*;
 
 #[derive(Debug)]
 pub struct RootCube([[[N; 9]; 9]; 9]);
