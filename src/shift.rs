@@ -9,6 +9,9 @@ impl<C: Cube> Cube for Shift<C> {
   fn get(&self, pos: Pos) -> crate::n::N {
     self.cube.get(pos) + self.shift
   }
+  fn set(&mut self, pos: Pos, val: N) {
+    self.cube.set(pos, val - self.shift)
+  }
   fn size(&self) -> Pos {
     self.cube.size()
   }

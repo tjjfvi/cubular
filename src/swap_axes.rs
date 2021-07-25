@@ -19,13 +19,16 @@ impl<C: Cube> Cube for SwapAxes<C> {
   fn get(&self, pos: Pos) -> crate::n::N {
     self.cube.get(self.transform_pos(pos))
   }
+  fn set(&mut self, pos: Pos, val: N) {
+    self.cube.set(self.transform_pos(pos), val)
+  }
   fn size(&self) -> Pos {
     self.transform_pos(self.cube.size())
   }
 }
 
 pub trait MakeSwapAxes: Cube + Sized {
-  fn permute_axes(self, from: Axis, to: Axis) -> SwapAxes<Self> {
+  fn swap_axes(self, from: Axis, to: Axis) -> SwapAxes<Self> {
     SwapAxes {
       cube: self,
       from,

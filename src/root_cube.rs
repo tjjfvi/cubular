@@ -1,7 +1,9 @@
+use std::cell::UnsafeCell;
+
 use crate::*;
 
 #[derive(Debug)]
-pub struct RootCube([[[N; 9]; 9]; 9]);
+pub struct RootCube(UnsafeCell<[[[N; 9]; 9]; 9]>);
 
 impl RootCube {
   #[must_use]
@@ -23,13 +25,18 @@ impl RootCube {
       }
     }
 
-    RootCube(x9(x9(x9(|(x, (y, (z, _)))| N((x + y + z) % 9))))(()))
+    RootCube(UnsafeCell::new(x9(x9(x9(|(x, (y, (z, _)))| {
+      N((x + y + z) % 9)
+    })))(())))
   }
 }
 
 impl Cube for RootCube {
   fn get(&self, pos: Pos) -> N {
-    self.0[pos.0][pos.1][pos.2]
+    unsafe { (*self.0.get())[pos.0][pos.1][pos.2] }
+  }
+  fn set(&mut self, pos: Pos, val: N) {
+    unsafe { (*self.0.get())[pos.0][pos.1][pos.2] = val }
   }
   fn size(&self) -> Pos {
     Pos(9, 9, 9)

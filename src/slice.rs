@@ -10,6 +10,9 @@ impl<C: Cube> Cube for Slice<C> {
   fn get(&self, pos: Pos) -> crate::n::N {
     self.cube.get(pos + self.min)
   }
+  fn set(&mut self, pos: Pos, val: N) {
+    self.cube.set(pos + self.min, val)
+  }
   fn size(&self) -> Pos {
     self.size
   }
