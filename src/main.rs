@@ -1,4 +1,5 @@
 mod cube;
+mod cube_iter;
 mod display_cube;
 mod flip;
 mod n;
@@ -8,15 +9,16 @@ mod shift;
 mod slice;
 mod swap_axes;
 
-pub use cube::*;
-pub use display_cube::*;
-pub use flip::*;
-pub use n::*;
-pub use pos::*;
-pub use root_cube::*;
-pub use shift::*;
-pub use slice::*;
-pub use swap_axes::*;
+pub(crate) use cube::*;
+pub(crate) use cube_iter::*;
+pub(crate) use display_cube::*;
+pub(crate) use flip::*;
+pub(crate) use n::*;
+pub(crate) use pos::*;
+pub(crate) use root_cube::*;
+pub(crate) use shift::*;
+pub(crate) use slice::*;
+pub(crate) use swap_axes::*;
 
 fn main() {
   println!(
