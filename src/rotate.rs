@@ -1,29 +1,35 @@
 use crate::*;
 
-pub trait Rotate<'a>: Cube + Sized + 'a {
-  fn rotate_x(self) -> Flip<SwapAxes<Self>> {
-    self.swap_axes(Axis::Y, Axis::Z).flip(Axis::Y)
+pub struct Rotate<C: Cube> {
+  pub cube: C,
+  pub axis: Axis,
+  pub amount: i8,
+}
+
+impl<C: Cube> Cube for Rotate<C> {
+  fn get(&self, pos: Pos) -> crate::n::N {
+    self
+      .cube
+      .get(pos.rotate(self.axis, -self.amount, self.size().0))
   }
-  fn rotate_y(self) -> Flip<SwapAxes<Self>> {
-    self.swap_axes(Axis::X, Axis::Z).flip(Axis::X)
+  unsafe fn set(&mut self, pos: Pos, val: N) {
+    self
+      .cube
+      .set(pos.rotate(self.axis, -self.amount, self.cube.size().0), val)
   }
-  fn rotate_z(self) -> Flip<SwapAxes<Self>> {
-    self.swap_axes(Axis::X, Axis::Y).flip(Axis::X)
-  }
-  fn rotate_once(self, axis: Axis) -> Flip<SwapAxes<Self>> {
-    match axis {
-      Axis::X => self.rotate_x(),
-      Axis::Y => self.rotate_y(),
-      Axis::Z => self.rotate_z(),
-    }
-  }
-  fn rotate(self, axis: Axis, amount: i8) -> Box<dyn Cube + 'a> {
-    let mut cur: Box<dyn Cube> = Box::new(self);
-    for _ in 0..(amount.rem_euclid(4)) {
-      cur = Box::new(cur.rotate_once(axis))
-    }
-    cur
+  fn size(&self) -> Pos {
+    self.cube.size()
   }
 }
 
-impl<'a, T: Cube + 'a> Rotate<'a> for T {}
+pub trait MakeRotate: Cube + Sized {
+  fn rotate(self, axis: Axis, amount: i8) -> Rotate<Self> {
+    Rotate {
+      cube: self,
+      axis,
+      amount,
+    }
+  }
+}
+
+impl<T: Cube> MakeRotate for T {}

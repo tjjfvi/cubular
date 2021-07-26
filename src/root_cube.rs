@@ -26,7 +26,7 @@ impl RootCube {
     }
 
     RootCube(UnsafeCell::new(x9(x9(x9(|(x, (y, (z, _)))| {
-      N((x + y + z) % 9)
+      N((x + y + z) % 18)
     })))(())))
   }
 }
@@ -35,8 +35,8 @@ impl Cube for RootCube {
   fn get(&self, pos: Pos) -> N {
     unsafe { (*self.0.get())[pos.0][pos.1][pos.2] }
   }
-  fn set(&mut self, pos: Pos, val: N) {
-    unsafe { (*self.0.get())[pos.0][pos.1][pos.2] = val }
+  unsafe fn set(&mut self, pos: Pos, val: N) {
+    (*self.0.get())[pos.0][pos.1][pos.2] = val
   }
   fn size(&self) -> Pos {
     Pos(9, 9, 9)

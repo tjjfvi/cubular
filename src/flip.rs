@@ -6,9 +6,8 @@ pub struct Flip<C: Cube> {
 }
 
 impl<C: Cube> Flip<C> {
-  pub fn transform_pos(&self, mut pos: Pos) -> Pos {
-    pos[self.axis] = self.size()[self.axis] - 1 - pos[self.axis];
-    pos
+  pub fn transform_pos(&self, pos: Pos) -> Pos {
+    pos.flip(self.axis, self.size()[self.axis])
   }
 }
 
@@ -16,7 +15,7 @@ impl<C: Cube> Cube for Flip<C> {
   fn get(&self, pos: Pos) -> crate::n::N {
     self.cube.get(self.transform_pos(pos))
   }
-  fn set(&mut self, pos: Pos, val: N) {
+  unsafe fn set(&mut self, pos: Pos, val: N) {
     self.cube.set(self.transform_pos(pos), val)
   }
   fn size(&self) -> Pos {

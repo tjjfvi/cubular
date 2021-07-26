@@ -3,6 +3,33 @@ use std::ops::{Add, Index, IndexMut, Sub};
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub struct Pos(pub usize, pub usize, pub usize);
 
+impl Pos {
+  pub fn swap_axes(mut self, from: Axis, to: Axis) -> Pos {
+    let f = self[from];
+    self[from] = self[to];
+    self[to] = f;
+    self
+  }
+  pub fn flip(mut self, axis: Axis, max: usize) -> Pos {
+    self[axis] = max - 1 - self[axis];
+    self
+  }
+  pub fn rotate(self, axis: Axis, amount: i8, max: usize) -> Pos {
+    let mut cur = self;
+    for _ in 0..(amount.rem_euclid(4)) {
+      cur = match axis {
+        Axis::X => cur.swap_axes(Axis::Y, Axis::Z).flip(Axis::Y, max),
+        Axis::Y => cur.swap_axes(Axis::X, Axis::Z).flip(Axis::X, max),
+        Axis::Z => cur.swap_axes(Axis::X, Axis::Y).flip(Axis::X, max),
+      };
+    }
+    cur
+  }
+  pub fn parity(self) -> usize {
+    (self.0 + self.1 + self.2) % 2
+  }
+}
+
 impl Add for Pos {
   type Output = Pos;
 
@@ -19,7 +46,7 @@ impl Sub for Pos {
   }
 }
 
-#[derive(Copy, Clone, PartialEq, Eq)]
+#[derive(Copy, Clone, PartialEq, Eq, Debug)]
 pub enum Axis {
   X = 0,
   Y = 1,

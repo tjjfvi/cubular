@@ -21,6 +21,23 @@ pub trait Scramble: Cube + Sized {
       self.apply_move(center, axis, amount);
     }
   }
+  fn random_pos(&self) -> Pos {
+    let mut rng = rand::thread_rng();
+    let size = self.size();
+    Pos(
+      rng.gen_range(0..size.0),
+      rng.gen_range(0..size.1),
+      rng.gen_range(0..size.2),
+    )
+  }
+  fn random_value(&self, pos: Pos) -> N {
+    let mut rng = rand::thread_rng();
+    let mut val = rng.gen_range(0..9);
+    if pos.parity() != (val % 2) {
+      val += 9
+    }
+    N(val)
+  }
 }
 
 impl<T: Cube> Scramble for T {}
