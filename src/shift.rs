@@ -12,7 +12,7 @@ impl<C: Cube> Cube for Shift<C> {
   fn get_solved(&self, pos: Pos) -> crate::n::N {
     self.cube.get_solved(pos) + self.shift
   }
-  unsafe fn set(&mut self, pos: Pos, val: N) {
+  unsafe fn set(&self, pos: Pos, val: N) {
     self.cube.set(pos, val - self.shift)
   }
   fn size(&self) -> Pos {

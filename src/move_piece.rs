@@ -1,14 +1,15 @@
 use crate::*;
 
 pub trait MovePiece: Cube + Sized {
-  fn move_piece(&mut self, mut from: Pos, to: Pos) {
+  fn move_piece(&self, mut from: Pos, to: Pos) {
     if from.parity() != to.parity() {
+      dbg!((from, to));
       panic!("Cannot move between positions of different parities");
     }
     while from != to {
-      _move_piece_axis(&mut *self, Axis::X, &mut from, to);
-      _move_piece_axis(&mut *self, Axis::Y, &mut from, to);
-      _move_piece_axis(&mut *self, Axis::Z, &mut from, to);
+      _move_piece_axis(&*self, Axis::X, &mut from, to);
+      _move_piece_axis(&*self, Axis::Y, &mut from, to);
+      _move_piece_axis(&*self, Axis::Z, &mut from, to);
     }
   }
 }

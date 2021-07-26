@@ -3,8 +3,7 @@ use std::cell::UnsafeCell;
 
 use crate::*;
 
-#[derive(Debug)]
-pub struct RootCube(UnsafeCell<[[[N; 9]; 9]; 9]>);
+pub struct RootCube(pub UnsafeCell<[[[N; 9]; 9]; 9]>);
 
 lazy_static! {
 static ref SOLVED: [[[N; 9]; 9]; 9] = {
@@ -43,7 +42,7 @@ impl Cube for RootCube {
   fn get_solved(&self, pos: Pos) -> N {
     SOLVED[pos.0][pos.1][pos.2]
   }
-  unsafe fn set(&mut self, pos: Pos, val: N) {
+  unsafe fn set(&self, pos: Pos, val: N) {
     (*self.0.get())[pos.0][pos.1][pos.2] = val
   }
   fn size(&self) -> Pos {

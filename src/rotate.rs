@@ -17,7 +17,7 @@ impl<C: Cube> Cube for Rotate<C> {
       .cube
       .get_solved(pos.rotate(self.axis, -self.amount, self.size().0))
   }
-  unsafe fn set(&mut self, pos: Pos, val: N) {
+  unsafe fn set(&self, pos: Pos, val: N) {
     self
       .cube
       .set(pos.rotate(self.axis, -self.amount, self.cube.size().0), val)

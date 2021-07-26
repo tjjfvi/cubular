@@ -13,7 +13,7 @@ impl<C: Cube> Cube for SwapAxes<C> {
   fn get_solved(&self, pos: Pos) -> crate::n::N {
     self.cube.get_solved(pos.swap_axes(self.from, self.to))
   }
-  unsafe fn set(&mut self, pos: Pos, val: N) {
+  unsafe fn set(&self, pos: Pos, val: N) {
     self.cube.set(pos.swap_axes(self.from, self.to), val)
   }
   fn size(&self) -> Pos {
