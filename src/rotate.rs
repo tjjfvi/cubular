@@ -7,10 +7,15 @@ pub struct Rotate<C: Cube> {
 }
 
 impl<C: Cube> Cube for Rotate<C> {
-  fn get(&self, pos: Pos) -> crate::n::N {
+  fn get(&self, pos: Pos) -> N {
     self
       .cube
       .get(pos.rotate(self.axis, -self.amount, self.size().0))
+  }
+  fn get_solved(&self, pos: Pos) -> N {
+    self
+      .cube
+      .get_solved(pos.rotate(self.axis, -self.amount, self.size().0))
   }
   unsafe fn set(&mut self, pos: Pos, val: N) {
     self
