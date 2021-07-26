@@ -21,7 +21,7 @@ fn _move_piece_axis<C: Cube>(cube: C, axis: Axis, from: &mut Pos, to: Pos) {
   *from = from2.swap_axes(Axis::X, axis)
 }
 
-fn _move_piece_x<C: Cube>(mut cube: C, from: &mut Pos, to: Pos) {
+fn _move_piece_x<C: Cube>(cube: C, from: &mut Pos, to: Pos) {
   let size = cube.size();
   while from.0 != to.0 {
     let mut center = Pos(0, 0, 0);
