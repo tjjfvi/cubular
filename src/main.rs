@@ -12,7 +12,8 @@ mod rotate;
 mod scramble;
 mod shift;
 mod slice;
-mod solve;
+mod solve_final;
+mod solve_initial;
 mod swap_axes;
 
 pub(crate) use apply_move::*;
@@ -29,23 +30,17 @@ pub(crate) use rotate::*;
 pub(crate) use scramble::*;
 pub(crate) use shift::*;
 pub(crate) use slice::*;
-pub(crate) use solve::*;
+pub(crate) use solve_final::*;
+pub(crate) use solve_initial::*;
 pub(crate) use swap_axes::*;
 
 fn main() {
   let cube = RootCube::solved();
-  cube.scramble(1000);
-  cube.print();
-  cube.solve();
-  cube.print();
-  // for _ in 0..1000 {
-  //   let mut cube = RootCube::solved();
-  //   let pos = cube.random_pos();
-  //   let val = cube.random_value(pos);
-  //   cube.scramble(1000);
-  //   // cube.print();
-  //   cube.move_value(val, pos).unwrap();
-  //   // cube.print();
-  //   assert_eq!(cube.get(pos), val);
-  // }
+  cube.apply_move(Move(Pos(1, 1, 1), Axis::X, 1));
+  cube.solve_initial();
+  cube.solve_final();
+}
+
+fn is_solved<C: Cube>(cube: C) -> bool {
+  cube.iter().all(|(pos, val)| val == cube.get_solved(pos))
 }

@@ -18,7 +18,7 @@ pub trait Scramble: Cube + Sized {
         _ => Axis::Z,
       };
       let amount = rng.gen_range(1..=3);
-      self.apply_move(center, axis, amount);
+      self.apply_move(Move(center, axis, amount));
     }
   }
   fn random_pos(&self) -> Pos {

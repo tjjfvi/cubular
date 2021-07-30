@@ -46,7 +46,7 @@ fn _move_piece_x<C: Cube>(cube: C, from: &mut Pos, to: Pos) {
     } else {
       center.2 = from.2 - 1
     }
-    cube.apply_move(center, Axis::Z, amount);
+    cube.apply_move(Move(center, Axis::Z, amount));
     *from = (*from - (center - Pos(1, 1, 1))).rotate(Axis::Z, amount, 3) + (center - Pos(1, 1, 1));
   }
 }
