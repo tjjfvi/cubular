@@ -53,17 +53,6 @@ pub enum Axis {
   Z = 2,
 }
 
-impl Axis {
-  pub fn cross(self, other: Axis) -> Axis {
-    for axis in vec![Axis::X, Axis::Y, Axis::Z] {
-      if self != axis && other != axis {
-        return axis;
-      }
-    }
-    panic!("Unreachable");
-  }
-}
-
 impl Index<Axis> for Pos {
   type Output = usize;
   fn index(&self, index: Axis) -> &Self::Output {

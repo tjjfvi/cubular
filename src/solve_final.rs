@@ -20,7 +20,7 @@ lazy_static! {
 
 trait _SolveFinal: Cube + Sized {
   fn _solve(&self) {
-    for _ in 0..100 {
+    for _ in 0..10000 {
       println!("\n\n\n!!!\n\n\n");
       self.print();
       let mut rng = rand::thread_rng();
@@ -34,6 +34,7 @@ trait _SolveFinal: Cube + Sized {
         rng.gen_range(1..4),
         rng.gen_range(1..4),
       );
+      // let (from, to) = (Pos(1, 3, 1), Pos(1, 2, 2));
       if from.parity() != 1 || to.parity() != 1 {
         continue;
       }
@@ -77,7 +78,16 @@ trait _SolveFinal: Cube + Sized {
               2,
             ))
           } else {
-            self.apply_move(Move(center, from_axis.cross(to_axis), from_dir * to_dir));
+            let (rot_axis, rot_dir) = match (from_axis, to_axis) {
+              (Axis::X, Axis::Y) => (Axis::Z, 1),
+              (Axis::Y, Axis::X) => (Axis::Z, -1),
+              (Axis::X, Axis::Z) => (Axis::Y, 1),
+              (Axis::Z, Axis::X) => (Axis::Y, -1),
+              (Axis::Y, Axis::Z) => (Axis::X, 1),
+              (Axis::Z, Axis::Y) => (Axis::X, -1),
+              _ => panic!("Unreachable"),
+            };
+            self.apply_move(Move(center, rot_axis, from_dir * to_dir * rot_dir));
           }
         } else {
           self._move_inner(from, Pos(2, 2, 1));
