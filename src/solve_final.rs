@@ -29,15 +29,16 @@ trait _SolveFinal: Cube + Sized {
         rng.gen_range(1..4),
         rng.gen_range(1..4),
       );
-      let to = Pos(
-        rng.gen_range(1..4),
-        rng.gen_range(1..4),
-        rng.gen_range(1..4),
-      );
-      // let (from, to) = (Pos(1, 3, 1), Pos(1, 2, 2));
-      if from.parity() != 1 || to.parity() != 1 {
-        continue;
-      }
+      let to = loop {
+        let to = Pos(
+          rng.gen_range(1..4),
+          rng.gen_range(1..4),
+          rng.gen_range(1..4),
+        );
+        if from.parity() == to.parity() {
+          break to;
+        }
+      };
       let val = self.get(from);
       self._move_inner(from, to);
       println!("{:?}", (from, to));
@@ -122,6 +123,35 @@ trait _SolveFinal: Cube + Sized {
             self.apply_move(Move(center, Axis::Y, (to.0 + to.2 - 1) as i8 % 4));
           }
         }
+      }
+    } else {
+      if from == center {
+        self.apply_moves(INTO_CENTER_REVERSE.clone());
+        self._move_inner(Pos(1, 3, 2), to);
+      } else if to == center {
+        self._move_inner(from, Pos(1, 3, 2));
+        self.apply_moves(INTO_CENTER.clone());
+      } else if from.2 != to.2 {
+        let mut from = from;
+        while from.2 != to.2 {
+          let axis = if from.0 == 2 { Axis::Y } else { Axis::X };
+          self.apply_move(Move(center, axis, 1));
+          from = from.rotate(axis, 1, 5);
+        }
+        self._move_inner(from, to);
+      } else {
+        fn f(pos: Pos) -> i8 {
+          if pos.0 <= 2 && pos.1 == 1 {
+            3
+          } else if pos.0 == 3 && pos.1 <= 2 {
+            2
+          } else if pos.0 >= 2 && pos.1 == 3 {
+            1
+          } else {
+            0
+          }
+        }
+        self.apply_move(Move(center, Axis::Z, f(from) - f(to)));
       }
     }
     self.print();
