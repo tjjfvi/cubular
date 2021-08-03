@@ -6,10 +6,7 @@ use lazy_static::lazy_static;
 pub trait SolveFinal: Cube + Sized {
   fn solve_final(&self) {
     let slice = self.slice(Pos(4, 4, 4), Pos(5, 5, 5)).shift(N(6));
-    while !slice.is_solved() {
-      slice.scramble(1000);
-      slice._solve()
-    }
+    slice._solve();
   }
 }
 
@@ -228,7 +225,7 @@ trait _SolveFinal: Cube + Sized {
     for (pos, swap) in todo {
       self._solve_piece(pos, swap, &mut solved);
     }
-    self.print();
+    self.slice(Pos(1, 1, 1), Pos(3, 3, 3)).print();
   }
   fn _solve_piece(&self, pos: Pos, to_swap: Swap, solved: &mut HashSet<Pos>) {
     solved.insert(pos);

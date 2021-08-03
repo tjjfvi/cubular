@@ -1,5 +1,7 @@
 use std::{cmp::min, fmt::Display};
 
+use colored::Colorize;
+
 use crate::*;
 
 pub struct DisplayCube<'a, T: Cube + 'a>(&'a T);
@@ -25,7 +27,11 @@ impl<'a, T: Cube + 'a> Display for DisplayCube<'a, T> {
               f.write_str(" ")?;
             }
             let pos = Pos(col, row, grid);
-            <usize as Display>::fmt(&(self.0.get(pos).0 % 9), f)?;
+            let mut str = self.0.get(pos).to_string();
+            if self.0.get(pos) == self.0.get_solved(pos) {
+              str = str.green().to_string();
+            }
+            f.write_str(&str[..])?;
           }
         }
       }

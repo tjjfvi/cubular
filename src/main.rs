@@ -41,4 +41,5 @@ fn main() {
   cube.apply_move(Move(Pos(1, 1, 1), Axis::Z, 2));
   cube.solve_initial();
   cube.solve_final();
+  cube.print();
 }
