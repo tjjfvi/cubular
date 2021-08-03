@@ -2,7 +2,6 @@ use std::collections::HashSet;
 
 use crate::*;
 use lazy_static::lazy_static;
-use rand::Rng;
 
 pub trait SolveFinal: Cube + Sized {
   fn solve_final(&self) {
@@ -133,23 +132,29 @@ trait _SolveFinal: Cube + Sized {
   }
   fn _get_swap(&self, pos: Pos) -> Swap {
     match pos {
-      p if p.0 >= 1 && p.0 <= 3 && p.1 >= 1 && p.1 <= 3 && p.2 >= 1 && p.2 <= 3 => Swap {
+      p if in_inner(p) => Swap {
+        order: 0,
         source: p,
         moves: vec![],
       },
-      p if p.2 >= 3 => {
-        println!("X2");
-        self
-          ._get_swap(pos.rotate(Axis::X, 2, 5))
-          .rotate(Axis::X, 2, 5)
-      }
       p if p.0 >= 3 || p.1 >= 3 => {
         println!("Z1");
         self
           ._get_swap(pos.rotate(Axis::Z, 1, 5))
           .rotate(Axis::Z, -1, 5)
       }
+      p if p.2 >= 1 => {
+        let axis = if p.1 == 0 { Axis::X } else { Axis::Y };
+        self._get_swap(pos.rotate(axis, 1, 5)).rotate(axis, -1, 5)
+      }
+      p if p.1 > p.0 => {
+        println!("sXY");
+        self
+          ._get_swap(pos.swap_axes(Axis::X, Axis::Y))
+          .swap_axes(Axis::X, Axis::Y)
+      }
       Pos(0, 0, 0) => Swap {
+        order: 0,
         source: Pos(2, 2, 2),
         moves: vec![
           Move(Pos(1, 1, 1), Axis::Z, 2),
@@ -157,6 +162,7 @@ trait _SolveFinal: Cube + Sized {
         ],
       },
       Pos(1, 0, 0) => Swap {
+        order: 1,
         source: Pos(2, 3, 2),
         moves: vec![
           Move(Pos(1, 1, 1), Axis::Z, 1),
@@ -166,24 +172,51 @@ trait _SolveFinal: Cube + Sized {
           Move(Pos(1, 1, 1), Axis::Z, -1),
         ],
       },
-      Pos(0, 1, 0) => Swap {
-        source: Pos(3, 2, 2),
+      Pos(2, 0, 0) => Swap {
+        order: 2,
+        source: Pos(2, 2, 2),
         moves: vec![
+          Move(Pos(2, 3, 2), Axis::Z, -1),
+          Move(Pos(1, 1, 1), Axis::Z, 1),
+          Move(Pos(1, 1, 1), Axis::Y, 1),
+          Move(Pos(2, 3, 2), Axis::Z, 1),
+          Move(Pos(1, 1, 1), Axis::Y, -1),
           Move(Pos(1, 1, 1), Axis::Z, -1),
-          Move(Pos(1, 1, 1), Axis::X, 1),
+        ],
+      },
+      Pos(1, 1, 0) => Swap {
+        order: 3,
+        source: Pos(3, 3, 2),
+        moves: vec![
+          Move(Pos(1, 1, 1), Axis::Z, 1),
+          Move(Pos(1, 1, 1), Axis::Y, 2),
           Move(Pos(2, 2, 2), Axis::Z, 2),
-          Move(Pos(1, 1, 1), Axis::X, -1),
+          Move(Pos(1, 1, 1), Axis::Y, 2),
+          Move(Pos(1, 1, 1), Axis::Z, -1),
+        ],
+      },
+      Pos(2, 1, 0) => Swap {
+        order: 4,
+        source: Pos(1, 2, 2),
+        moves: vec![
+          Move(Pos(2, 3, 2), Axis::Z, -1),
+          Move(Pos(1, 1, 1), Axis::Z, -1),
+          Move(Pos(1, 1, 1), Axis::X, 2),
+          Move(Pos(2, 3, 2), Axis::Z, 1),
+          Move(Pos(1, 1, 1), Axis::X, 2),
           Move(Pos(1, 1, 1), Axis::Z, 1),
         ],
       },
-      Pos(0, 0, 1) => Swap {
-        source: Pos(3, 2, 2),
+      Pos(2, 2, 0) => Swap {
+        order: 5,
+        source: Pos(2, 3, 3),
         moves: vec![
-          Move(Pos(1, 1, 1), Axis::Y, -1),
-          Move(Pos(1, 1, 1), Axis::X, -1),
-          Move(Pos(2, 2, 2), Axis::Z, 2),
-          Move(Pos(1, 1, 1), Axis::X, 1),
-          Move(Pos(1, 1, 1), Axis::Y, 1),
+          Move(Pos(1, 1, 1), Axis::Z, 1),
+          Move(Pos(1, 1, 1), Axis::Y, 2),
+          Move(Pos(3, 3, 2), Axis::X, 1),
+          Move(Pos(1, 1, 1), Axis::Y, 2),
+          Move(Pos(1, 1, 1), Axis::Z, -1),
+          Move(Pos(3, 3, 2), Axis::X, -1),
         ],
       },
       _ => todo!("{:?}", pos),
@@ -192,31 +225,18 @@ trait _SolveFinal: Cube + Sized {
   fn _solve(&self) {
     self.print();
     let mut solved: HashSet<Pos> = HashSet::new();
-    let todo: Vec<_> = self.iter().map(|x| x.0).filter(|x| !in_inner(*x)).collect();
-    let fns: Vec<fn(Pos) -> bool> = vec![is_corner, is_outer_edge];
-    for pred in fns {
-      for pos in todo.iter() {
-        if pred(*pos) {
-          self._solve_piece(*pos, &mut solved)
-        }
-      }
+    let mut todo = self
+      .iter()
+      .filter(|x| !in_inner(x.0))
+      .map(|x| (x.0, self._get_swap(x.0)))
+      .collect::<Vec<_>>();
+    todo.sort_by_key(|x| x.1.order);
+    for (pos, swap) in todo {
+      self._solve_piece(pos, swap, &mut solved);
     }
     self.print();
-    fn is_corner(x: Pos) -> bool {
-      (x.0 == 0 || x.0 == 4) && (x.1 == 0 || x.1 == 4) && (x.2 == 0 || x.2 == 4)
-    }
-    fn is_outer_edge(x: Pos) -> bool {
-      !is_corner(x)
-        && x.0 != 2
-        && x.1 != 2
-        && x.2 != 2
-        && ((x.0 == 1 || x.0 == 3) as u8
-          + (x.1 == 1 || x.1 == 3) as u8
-          + (x.2 == 1 || x.2 == 3) as u8)
-          == 1
-    }
   }
-  fn _solve_piece(&self, pos: Pos, solved: &mut HashSet<Pos>) {
+  fn _solve_piece(&self, pos: Pos, to_swap: Swap, solved: &mut HashSet<Pos>) {
     println!("\n\n\n\n\n\n\n\n");
     self.print();
     solved.insert(pos);
@@ -236,17 +256,18 @@ trait _SolveFinal: Cube + Sized {
       })
       .unwrap();
     let from_swap = self._get_swap(from);
-    let to_swap = self._get_swap(pos);
     dbg!(from, &from_swap, self.get(from_swap.source));
     self.apply_moves(from_swap.moves.reverse_moves());
     dbg!(self.get(from_swap.source));
     self._move_inner(from_swap.source, to_swap.source);
-    dbg!(self.get(to_swap.source));
+    dbg!(to_swap.source, self.get(to_swap.source));
     self.print();
     self.apply_moves(to_swap.moves);
     println!("solved {:?} {:?}", pos, value);
     self.print();
-    assert_eq!(self.get(pos), value);
+    for p in solved.iter() {
+      assert_eq!(self.get(*p), self.get_solved(*p), "{:?}", p);
+    }
   }
 }
 
@@ -255,4 +276,57 @@ impl<T: Cube> SolveFinal for T {}
 
 fn in_inner(p: Pos) -> bool {
   p.0 >= 1 && p.0 <= 3 && p.1 >= 1 && p.1 <= 3 && p.2 >= 1 && p.2 <= 3
+}
+
+#[derive(Debug)]
+struct Swap {
+  pub order: u8,
+  pub source: Pos,
+  pub moves: Vec<Move>,
+}
+
+impl Swap {
+  pub fn swap_axes(mut self, from: Axis, to: Axis) -> Self {
+    self.source = self.source.swap_axes(from, to);
+    for m in self.moves.iter_mut() {
+      m.0 = m.0.swap_axes(from, to);
+      if m.1 == from {
+        m.1 = to;
+      } else if m.1 == to {
+        m.1 = from;
+      } else {
+        m.1;
+        m.2 = -m.2;
+      }
+    }
+    self
+  }
+  pub fn rotate(mut self, axis: Axis, amount: i8, max: usize) -> Self {
+    let amount = amount.rem_euclid(4);
+    if amount == 0 {
+      return self;
+    }
+    self.source = self.source.rotate(axis, amount, max);
+    for m in self.moves.iter_mut() {
+      m.0 = m.0.rotate(axis, amount, max);
+      if amount != 2 {
+        m.1 = match (axis, m.1) {
+          (Axis::Y, Axis::Z) | (Axis::Z, Axis::Y) => Axis::X,
+          (Axis::X, Axis::Z) | (Axis::Z, Axis::X) => Axis::Y,
+          (Axis::X, Axis::Y) | (Axis::Y, Axis::X) => Axis::Z,
+          _ => axis,
+        };
+      }
+      if m.1
+        == match axis {
+          Axis::X => Axis::Y,
+          Axis::Y => Axis::Z,
+          Axis::Z => Axis::X,
+        }
+      {
+        m.2 = -m.2;
+      }
+    }
+    self
+  }
 }
