@@ -15,6 +15,7 @@ pub trait ApplyMove: Cube + Sized {
   fn apply_moves(&self, moves: Vec<Move>) {
     for m in moves {
       self.apply_move(m);
+      self.print();
     }
   }
 }

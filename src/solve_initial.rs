@@ -93,11 +93,5 @@ trait _SolveInitial: Cube + Sized {
   }
 }
 
-#[derive(Debug)]
-struct Swap {
-  source: Pos,
-  moves: Vec<Move>,
-}
-
 impl<T: Cube> _SolveInitial for T {}
 impl<T: Cube> SolveInitial for T {}

@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use crate::*;
 use lazy_static::lazy_static;
 use rand::Rng;
@@ -19,32 +21,6 @@ lazy_static! {
 }
 
 trait _SolveFinal: Cube + Sized {
-  fn _solve(&self) {
-    for _ in 0..10000 {
-      println!("\n\n\n!!!\n\n\n");
-      self.print();
-      let mut rng = rand::thread_rng();
-      let from = Pos(
-        rng.gen_range(1..4),
-        rng.gen_range(1..4),
-        rng.gen_range(1..4),
-      );
-      let to = loop {
-        let to = Pos(
-          rng.gen_range(1..4),
-          rng.gen_range(1..4),
-          rng.gen_range(1..4),
-        );
-        if from.parity() == to.parity() {
-          break to;
-        }
-      };
-      let val = self.get(from);
-      self._move_inner(from, to);
-      println!("{:?}", (from, to));
-      assert_eq!(self.get(to), val);
-    }
-  }
   fn _move_inner(&self, from: Pos, to: Pos) {
     println!("_move_inner{:?}", (from, to));
     let center = Pos(2, 2, 2);
@@ -154,9 +130,129 @@ trait _SolveFinal: Cube + Sized {
         self.apply_move(Move(center, Axis::Z, f(from) - f(to)));
       }
     }
+  }
+  fn _get_swap(&self, pos: Pos) -> Swap {
+    match pos {
+      p if p.0 >= 1 && p.0 <= 3 && p.1 >= 1 && p.1 <= 3 && p.2 >= 1 && p.2 <= 3 => Swap {
+        source: p,
+        moves: vec![],
+      },
+      p if p.2 >= 3 => {
+        println!("X2");
+        self
+          ._get_swap(pos.rotate(Axis::X, 2, 5))
+          .rotate(Axis::X, 2, 5)
+      }
+      p if p.0 >= 3 || p.1 >= 3 => {
+        println!("Z1");
+        self
+          ._get_swap(pos.rotate(Axis::Z, 1, 5))
+          .rotate(Axis::Z, -1, 5)
+      }
+      Pos(0, 0, 0) => Swap {
+        source: Pos(2, 2, 2),
+        moves: vec![
+          Move(Pos(1, 1, 1), Axis::Z, 2),
+          Move(Pos(1, 1, 1), Axis::X, 1),
+        ],
+      },
+      Pos(1, 0, 0) => Swap {
+        source: Pos(2, 3, 2),
+        moves: vec![
+          Move(Pos(1, 1, 1), Axis::Z, 1),
+          Move(Pos(1, 1, 1), Axis::Y, 1),
+          Move(Pos(2, 2, 2), Axis::Z, 2),
+          Move(Pos(1, 1, 1), Axis::Y, -1),
+          Move(Pos(1, 1, 1), Axis::Z, -1),
+        ],
+      },
+      Pos(0, 1, 0) => Swap {
+        source: Pos(3, 2, 2),
+        moves: vec![
+          Move(Pos(1, 1, 1), Axis::Z, -1),
+          Move(Pos(1, 1, 1), Axis::X, 1),
+          Move(Pos(2, 2, 2), Axis::Z, 2),
+          Move(Pos(1, 1, 1), Axis::X, -1),
+          Move(Pos(1, 1, 1), Axis::Z, 1),
+        ],
+      },
+      Pos(0, 0, 1) => Swap {
+        source: Pos(3, 2, 2),
+        moves: vec![
+          Move(Pos(1, 1, 1), Axis::Y, -1),
+          Move(Pos(1, 1, 1), Axis::X, -1),
+          Move(Pos(2, 2, 2), Axis::Z, 2),
+          Move(Pos(1, 1, 1), Axis::X, 1),
+          Move(Pos(1, 1, 1), Axis::Y, 1),
+        ],
+      },
+      _ => todo!("{:?}", pos),
+    }
+  }
+  fn _solve(&self) {
     self.print();
+    let mut solved: HashSet<Pos> = HashSet::new();
+    let todo: Vec<_> = self.iter().map(|x| x.0).filter(|x| !in_inner(*x)).collect();
+    let fns: Vec<fn(Pos) -> bool> = vec![is_corner, is_outer_edge];
+    for pred in fns {
+      for pos in todo.iter() {
+        if pred(*pos) {
+          self._solve_piece(*pos, &mut solved)
+        }
+      }
+    }
+    self.print();
+    fn is_corner(x: Pos) -> bool {
+      (x.0 == 0 || x.0 == 4) && (x.1 == 0 || x.1 == 4) && (x.2 == 0 || x.2 == 4)
+    }
+    fn is_outer_edge(x: Pos) -> bool {
+      !is_corner(x)
+        && x.0 != 2
+        && x.1 != 2
+        && x.2 != 2
+        && ((x.0 == 1 || x.0 == 3) as u8
+          + (x.1 == 1 || x.1 == 3) as u8
+          + (x.2 == 1 || x.2 == 3) as u8)
+          == 1
+    }
+  }
+  fn _solve_piece(&self, pos: Pos, solved: &mut HashSet<Pos>) {
+    println!("\n\n\n\n\n\n\n\n");
+    self.print();
+    solved.insert(pos);
+    let value = self.get_solved(pos);
+    if self.get(pos) == value {
+      println!("already solved {:?} {:?}", pos, value);
+      return;
+    }
+    let from = (1..=3)
+      .flat_map(|x| (1..=3).flat_map(move |y| (1..=3).map(move |z| Pos(x, y, z))))
+      .find(|p| self.get(*p) == value)
+      .or_else(|| {
+        self
+          .iter()
+          .find(|(p, n)| *n == value && !solved.contains(p))
+          .map(|x| x.0)
+      })
+      .unwrap();
+    let from_swap = self._get_swap(from);
+    let to_swap = self._get_swap(pos);
+    dbg!(from, &from_swap, self.get(from_swap.source));
+    self.apply_moves(from_swap.moves.reverse_moves());
+    dbg!(self.get(from_swap.source));
+    self._move_inner(from_swap.source, to_swap.source);
+    dbg!(self.get(to_swap.source));
+    self.print();
+    self.apply_moves(to_swap.moves);
+    println!("solved {:?} {:?}", pos, value);
+    self.print();
+    assert_eq!(self.get(pos), value);
   }
 }
 
 impl<T: Cube> _SolveFinal for T {}
 impl<T: Cube> SolveFinal for T {}
+
+fn in_inner(p: Pos) -> bool {
+  p.0 >= 1 && p.0 <= 3 && p.1 >= 1 && p.1 <= 3 && p.2 >= 1 && p.2 <= 3
+}
