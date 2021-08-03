@@ -13,8 +13,7 @@ mod rotate;
 mod scramble;
 mod shift;
 mod slice;
-mod solve_final;
-mod solve_initial;
+mod solve;
 mod swap_axes;
 
 pub(crate) use apply_move::*;
@@ -32,14 +31,13 @@ pub(crate) use rotate::*;
 pub(crate) use scramble::*;
 pub(crate) use shift::*;
 pub(crate) use slice::*;
-pub(crate) use solve_final::*;
-pub(crate) use solve_initial::*;
+pub(crate) use solve::*;
 pub(crate) use swap_axes::*;
 
 fn main() {
   let cube = RootCube::solved();
   cube.apply_move(Move(Pos(1, 1, 1), Axis::Z, 2));
-  cube.solve_initial();
-  cube.solve_final();
+  // cube.scramble(1000);
+  cube.solve();
   cube.print();
 }

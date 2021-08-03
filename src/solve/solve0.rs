@@ -1,23 +1,35 @@
-use crate::*;
+use super::*;
 
-pub trait SolveInitial: Cube + Sized {
-  fn solve_initial(&self) {
+pub trait Solve0: Cube + Sized {
+  fn solve0(&self) {
     self._solve()
   }
 }
 
-trait _SolveInitial: Cube + Sized {
+trait _Solve0: Cube + Sized {
   fn _solve(&self) {
-    for i in 0..4 {
+    for i in 0..=1 {
       self._solve_face(Axis::X, Pos(i, i, i));
       self._solve_face(Axis::Y, Pos(i + 1, i, i));
       self._solve_face(Axis::Z, Pos(i + 1, i + 1, i));
+    }
+    for i in 0..=1 {
+      self._solve_face_flipped(Axis::X, Pos(i, i, i));
+      self._solve_face_flipped(Axis::Y, Pos(i + 1, i, i));
+      self._solve_face_flipped(Axis::Z, Pos(i + 1, i + 1, i));
     }
   }
   fn _solve_face(&self, axis: Axis, offset: Pos) {
     self
       .slice(offset, self.size() - offset)
       .swap_axes(Axis::Z, axis)
+      ._solve_face_z()
+  }
+  fn _solve_face_flipped(&self, axis: Axis, offset: Pos) {
+    self
+      .slice(Pos(2, 2, 2), self.size() - Pos(2, 2, 2) - offset)
+      .swap_axes(Axis::Z, axis)
+      .flip(Axis::Z)
       ._solve_face_z()
   }
   fn _solve_face_z(&self) {
@@ -93,11 +105,5 @@ trait _SolveInitial: Cube + Sized {
   }
 }
 
-#[derive(Debug)]
-pub struct Swap {
-  pub source: Pos,
-  pub moves: Vec<Move>,
-}
-
-impl<T: Cube> _SolveInitial for T {}
-impl<T: Cube> SolveInitial for T {}
+impl<T: Cube> _Solve0 for T {}
+impl<T: Cube> Solve0 for T {}
