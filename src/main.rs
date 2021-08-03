@@ -3,6 +3,7 @@ mod cube;
 mod cube_iter;
 mod display_cube;
 mod flip;
+mod is_solved;
 mod move_piece;
 mod move_value;
 mod n;
@@ -21,6 +22,7 @@ pub(crate) use cube::*;
 pub(crate) use cube_iter::*;
 pub(crate) use display_cube::*;
 pub(crate) use flip::*;
+pub(crate) use is_solved::*;
 pub(crate) use move_piece::*;
 pub(crate) use move_value::*;
 pub(crate) use n::*;
@@ -39,8 +41,4 @@ fn main() {
   cube.apply_move(Move(Pos(1, 1, 1), Axis::Z, 2));
   cube.solve_initial();
   cube.solve_final();
-}
-
-fn is_solved<C: Cube>(cube: C) -> bool {
-  cube.iter().all(|(pos, val)| val == cube.get_solved(pos))
 }

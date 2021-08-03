@@ -5,7 +5,11 @@ use lazy_static::lazy_static;
 
 pub trait SolveFinal: Cube + Sized {
   fn solve_final(&self) {
-    self.slice(Pos(4, 4, 4), Pos(5, 5, 5)).shift(N(6))._solve()
+    let slice = self.slice(Pos(4, 4, 4), Pos(5, 5, 5)).shift(N(6));
+    while !slice.is_solved() {
+      slice.scramble(1000);
+      slice._solve()
+    }
   }
 }
 
@@ -21,7 +25,6 @@ lazy_static! {
 
 trait _SolveFinal: Cube + Sized {
   fn _move_inner(&self, from: Pos, to: Pos) {
-    println!("_move_inner{:?}", (from, to));
     let center = Pos(2, 2, 2);
     if from.parity() != to.parity() {
       panic!("Cannot move between positions of different parities");
@@ -68,14 +71,12 @@ trait _SolveFinal: Cube + Sized {
         } else {
           self._move_inner(from, Pos(2, 2, 1));
           self.apply_moves(INTO_CENTER_REVERSE.clone());
-          self.print();
           self._move_inner(Pos(1, 3, 1), to);
         }
       } else {
         if in_center(to) {
           self._move_inner(from, Pos(1, 3, 1));
           self.apply_moves(INTO_CENTER.clone());
-          self.print();
           self._move_inner(Pos(2, 2, 1), to);
         } else {
           fn f(pos: Pos) -> i8 {
@@ -137,22 +138,16 @@ trait _SolveFinal: Cube + Sized {
         source: p,
         moves: vec![],
       },
-      p if p.0 >= 3 || p.1 >= 3 => {
-        println!("Z1");
-        self
-          ._get_swap(pos.rotate(Axis::Z, 1, 5))
-          .rotate(Axis::Z, -1, 5)
-      }
+      p if p.0 >= 3 || p.1 >= 3 => self
+        ._get_swap(pos.rotate(Axis::Z, 1, 5))
+        .rotate(Axis::Z, -1, 5),
       p if p.2 >= 1 => {
         let axis = if p.1 == 0 { Axis::X } else { Axis::Y };
         self._get_swap(pos.rotate(axis, 1, 5)).rotate(axis, -1, 5)
       }
-      p if p.1 > p.0 => {
-        println!("sXY");
-        self
-          ._get_swap(pos.swap_axes(Axis::X, Axis::Y))
-          .swap_axes(Axis::X, Axis::Y)
-      }
+      p if p.1 > p.0 => self
+        ._get_swap(pos.swap_axes(Axis::X, Axis::Y))
+        .swap_axes(Axis::X, Axis::Y),
       Pos(0, 0, 0) => Swap {
         order: 0,
         source: Pos(2, 2, 2),
@@ -219,11 +214,10 @@ trait _SolveFinal: Cube + Sized {
           Move(Pos(3, 3, 2), Axis::X, -1),
         ],
       },
-      _ => todo!("{:?}", pos),
+      _ => panic!("Unreachable"),
     }
   }
   fn _solve(&self) {
-    self.print();
     let mut solved: HashSet<Pos> = HashSet::new();
     let mut todo = self
       .iter()
@@ -237,12 +231,9 @@ trait _SolveFinal: Cube + Sized {
     self.print();
   }
   fn _solve_piece(&self, pos: Pos, to_swap: Swap, solved: &mut HashSet<Pos>) {
-    println!("\n\n\n\n\n\n\n\n");
-    self.print();
     solved.insert(pos);
     let value = self.get_solved(pos);
     if self.get(pos) == value {
-      println!("already solved {:?} {:?}", pos, value);
       return;
     }
     let from = (1..=3)
@@ -256,15 +247,9 @@ trait _SolveFinal: Cube + Sized {
       })
       .unwrap();
     let from_swap = self._get_swap(from);
-    dbg!(from, &from_swap, self.get(from_swap.source));
     self.apply_moves(from_swap.moves.reverse_moves());
-    dbg!(self.get(from_swap.source));
     self._move_inner(from_swap.source, to_swap.source);
-    dbg!(to_swap.source, self.get(to_swap.source));
-    self.print();
     self.apply_moves(to_swap.moves);
-    println!("solved {:?} {:?}", pos, value);
-    self.print();
     for p in solved.iter() {
       assert_eq!(self.get(*p), self.get_solved(*p), "{:?}", p);
     }

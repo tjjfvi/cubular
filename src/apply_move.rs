@@ -2,7 +2,6 @@ use crate::*;
 
 pub trait ApplyMove: Cube + Sized {
   fn apply_move(&self, Move(center, axis, amount): Move) {
-    println!("{:?}", Move(center, axis, amount));
     if amount == 0 {
       return;
     }
@@ -15,7 +14,6 @@ pub trait ApplyMove: Cube + Sized {
   fn apply_moves(&self, moves: Vec<Move>) {
     for m in moves {
       self.apply_move(m);
-      self.print();
     }
   }
 }
