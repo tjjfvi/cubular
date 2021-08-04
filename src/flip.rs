@@ -12,10 +12,10 @@ impl<C: Cube> Flip<C> {
 }
 
 impl<C: Cube> Cube for Flip<C> {
-  fn get(&self, pos: Pos) -> crate::n::N {
+  fn get(&self, pos: Pos) -> crate::value::Value {
     self.cube.get(self.transform_pos(pos))
   }
-  fn get_solved(&self, pos: Pos) -> crate::n::N {
+  fn get_solved(&self, pos: Pos) -> crate::value::Value {
     self.cube.get_solved(self.transform_pos(pos))
   }
   fn apply_move(&mut self, mut m: Move) {

@@ -30,13 +30,13 @@ pub trait Scramble: Cube + Sized {
       rng.gen_range(0..size.2),
     )
   }
-  fn random_value(&self, pos: Pos) -> N {
+  fn random_value(&self, pos: Pos) -> Value {
     let mut rng = rand::thread_rng();
     let mut val = rng.gen_range(0..9);
     if pos.parity() != (val % 2) {
       val += 9
     }
-    N(val)
+    Value(val)
   }
 }
 

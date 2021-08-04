@@ -1,8 +1,8 @@
 use crate::*;
 
 pub trait Cube {
-  fn get(&self, pos: Pos) -> N;
-  fn get_solved(&self, pos: Pos) -> N;
+  fn get(&self, pos: Pos) -> Value;
+  fn get_solved(&self, pos: Pos) -> Value;
   fn apply_move(&mut self, m: Move);
   fn size(&self) -> Pos;
   fn apply_moves(&mut self, moves: Vec<Move>) {
@@ -13,10 +13,10 @@ pub trait Cube {
 }
 
 impl<T: Cube + ?Sized> Cube for &mut T {
-  fn get(&self, pos: Pos) -> N {
+  fn get(&self, pos: Pos) -> Value {
     (**self).get(pos)
   }
-  fn get_solved(&self, pos: Pos) -> N {
+  fn get_solved(&self, pos: Pos) -> Value {
     (**self).get_solved(pos)
   }
   fn apply_move(&mut self, m: Move) {

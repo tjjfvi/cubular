@@ -4,13 +4,13 @@ mod display_cube;
 mod flip;
 mod is_solved;
 mod r#move;
-mod n;
 mod pos;
 mod root_cube;
 mod scramble;
 mod slice;
 mod solve;
 mod swap_axes;
+mod value;
 
 use std::time::Instant;
 
@@ -19,7 +19,6 @@ pub(crate) use cube_iter::*;
 pub(crate) use display_cube::*;
 pub(crate) use flip::*;
 pub(crate) use is_solved::*;
-pub(crate) use n::*;
 pub(crate) use pos::*;
 pub(crate) use r#move::*;
 pub(crate) use root_cube::*;
@@ -27,6 +26,7 @@ pub(crate) use scramble::*;
 pub(crate) use slice::*;
 pub(crate) use solve::*;
 pub(crate) use swap_axes::*;
+pub(crate) use value::*;
 
 fn main() {
   let start = Instant::now();

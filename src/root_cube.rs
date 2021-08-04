@@ -3,12 +3,12 @@ use lazy_static::lazy_static;
 use crate::*;
 
 pub struct RootCube {
-  pub values: [[[N; 9]; 9]; 9],
+  pub values: [[[Value; 9]; 9]; 9],
   pub moves: Vec<Move>,
 }
 
 lazy_static! {
-static ref SOLVED: [[[N; 9]; 9]; 9] = {
+static ref SOLVED: [[[Value; 9]; 9]; 9] = {
   #[inline(never)] // Prevent huge compiled sizes
   fn x9<F: Fn((usize, I)) -> T, I: Copy, T>(cb: F) -> impl Fn(I) -> [T; 9] {
     move |i| {
@@ -26,7 +26,7 @@ static ref SOLVED: [[[N; 9]; 9]; 9] = {
     }
   }
 
-  x9(x9(x9(|(x, (y, (z, _)))| N((x + y + z) % 18))))(())
+  x9(x9(x9(|(x, (y, (z, _)))| Value((x + y + z) % 18))))(())
 };
 }
 
@@ -44,10 +44,10 @@ impl RootCube {
 }
 
 impl Cube for RootCube {
-  fn get(&self, pos: Pos) -> N {
+  fn get(&self, pos: Pos) -> Value {
     self.values[pos.0][pos.1][pos.2]
   }
-  fn get_solved(&self, pos: Pos) -> N {
+  fn get_solved(&self, pos: Pos) -> Value {
     SOLVED[pos.0][pos.1][pos.2]
   }
   fn apply_move(&mut self, mut m: Move) {

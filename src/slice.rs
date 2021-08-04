@@ -7,10 +7,10 @@ pub struct Slice<C: Cube> {
 }
 
 impl<C: Cube> Cube for Slice<C> {
-  fn get(&self, pos: Pos) -> crate::n::N {
+  fn get(&self, pos: Pos) -> crate::value::Value {
     self.cube.get(pos + self.min)
   }
-  fn get_solved(&self, pos: Pos) -> crate::n::N {
+  fn get_solved(&self, pos: Pos) -> crate::value::Value {
     self.cube.get_solved(pos + self.min)
   }
   fn apply_move(&mut self, mut m: Move) {

@@ -6,7 +6,7 @@ pub struct CubeIter<'a, C: Cube> {
 }
 
 impl<'a, C: Cube> Iterator for CubeIter<'a, C> {
-  type Item = (Pos, N);
+  type Item = (Pos, Value);
   fn next(&mut self) -> Option<Self::Item> {
     let size = self.cube.size();
     if self.pos.2 == size.2 {

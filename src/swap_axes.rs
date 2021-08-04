@@ -7,10 +7,10 @@ pub struct SwapAxes<C: Cube> {
 }
 
 impl<C: Cube> Cube for SwapAxes<C> {
-  fn get(&self, pos: Pos) -> crate::n::N {
+  fn get(&self, pos: Pos) -> crate::value::Value {
     self.cube.get(pos.swap_axes(self.from, self.to))
   }
-  fn get_solved(&self, pos: Pos) -> crate::n::N {
+  fn get_solved(&self, pos: Pos) -> crate::value::Value {
     self.cube.get_solved(pos.swap_axes(self.from, self.to))
   }
   fn apply_move(&mut self, mut m: Move) {
