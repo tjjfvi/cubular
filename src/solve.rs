@@ -1,20 +1,20 @@
 mod apply_thin_move;
-mod solve_face_z;
+mod solve_front_face;
 mod solve_inner_corners;
 mod solve_inner_cross;
 mod solve_inner_edges;
 mod solve_outer_shell;
-mod step;
+mod solve_step;
 mod swap;
 
 pub(self) use crate::*;
 pub(self) use apply_thin_move::*;
-pub(self) use solve_face_z::*;
+pub(self) use solve_front_face::*;
 pub(self) use solve_inner_corners::*;
 pub(self) use solve_inner_cross::*;
 pub(self) use solve_inner_edges::*;
 pub(self) use solve_outer_shell::*;
-pub(self) use step::*;
+pub(self) use solve_step::*;
 pub(self) use swap::*;
 
 pub trait Solve: Cube {
@@ -43,14 +43,14 @@ trait _Solve: Cube {
     self
       .slice(offset, self.size() - offset)
       .swap_axes(Axis::Z, axis)
-      .apply_solve_step::<SolveFaceZ>()
+      .apply_solve_step::<SolveFrontFace>()
   }
   fn _solve_face_flipped(&self, axis: Axis, offset: Pos) {
     self
       .slice(Pos(2, 2, 2), self.size() - Pos(2, 2, 2) - offset)
       .swap_axes(Axis::Z, axis)
       .flip(Axis::Z)
-      .apply_solve_step::<SolveFaceZ>()
+      .apply_solve_step::<SolveFrontFace>()
   }
 }
 

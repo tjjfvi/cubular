@@ -3,9 +3,9 @@ use std::collections::HashSet;
 use super::*;
 
 #[derive(Default)]
-pub struct SolveFaceZ(HashSet<Pos>);
+pub struct SolveFrontFace(HashSet<Pos>);
 
-impl SolveStep for SolveFaceZ {
+impl SolveStep for SolveFrontFace {
   fn get_solved(&mut self) -> &mut HashSet<Pos> {
     &mut self.0
   }
