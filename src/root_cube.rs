@@ -2,7 +2,10 @@ use lazy_static::lazy_static;
 
 use crate::*;
 
-pub struct RootCube(pub [[[N; 9]; 9]; 9]);
+pub struct RootCube {
+  pub values: [[[N; 9]; 9]; 9],
+  pub moves: Vec<Move>,
+}
 
 lazy_static! {
 static ref SOLVED: [[[N; 9]; 9]; 9] = {
@@ -30,13 +33,19 @@ static ref SOLVED: [[[N; 9]; 9]; 9] = {
 impl RootCube {
   #[must_use]
   pub fn solved() -> RootCube {
-    RootCube(*SOLVED)
+    RootCube {
+      values: *SOLVED,
+      moves: vec![],
+    }
+  }
+  pub fn reset_moves(&mut self) {
+    self.moves.clear();
   }
 }
 
 impl Cube for RootCube {
   fn get(&self, pos: Pos) -> N {
-    self.0[pos.0][pos.1][pos.2]
+    self.values[pos.0][pos.1][pos.2]
   }
   fn get_solved(&self, pos: Pos) -> N {
     SOLVED[pos.0][pos.1][pos.2]
@@ -53,8 +62,9 @@ impl Cube for RootCube {
       .map(|(p, v)| (p.rotate(m.1, m.2, 3) + corner, v))
       .collect();
     for (pos, val) in pairs {
-      self.0[pos.0][pos.1][pos.2] = val;
+      self.values[pos.0][pos.1][pos.2] = val;
     }
+    self.moves.push(m);
   }
   fn size(&self) -> Pos {
     Pos(9, 9, 9)

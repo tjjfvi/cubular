@@ -31,9 +31,10 @@ pub(crate) use swap_axes::*;
 fn main() {
   let start = Instant::now();
   let mut cube = RootCube::solved();
-  cube.print();
   cube.scramble(1000);
+  cube.reset_moves();
   cube.solve();
   cube.print();
+  println!("{}", cube.moves.len());
   println!("{:?}", start.elapsed());
 }
