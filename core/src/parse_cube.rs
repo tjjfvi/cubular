@@ -4,7 +4,7 @@ use regex::Regex;
 
 use crate::*;
 
-pub fn parse_cube(str: String) -> Result<RootCube, String> {
+pub fn parse_cube(str: &str) -> Result<RootCube, String> {
   let str = str.to_lowercase();
   let str = str.trim();
   let charset = if str.contains('a') {

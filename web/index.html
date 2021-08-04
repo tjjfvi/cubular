@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>cubular</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      display: grid;
+      grid-template-columns: auto;
+      grid-template-rows: auto;
+      grid-template-areas:
+        "cube     solution"
+        "controls soltuion"
+        "moves    solution";
+    }
+
+    pre {
+      overflow: auto;
+    }
+  </style>
+</head>
+
+<body>
+  <textarea id="cube">
+0a1b2c3d4 a1b2c3d4e 1b2c3d4e5
+a1b2c3d4e 1b2c3d4e5 b2c3d4e5f
+1b2c3d4e5 b2c3d4e5f 2c3d4e5f6
+b2c3d4e5f 2c3d4e5f6 c3d4e5f6g
+2c3d4e5f6 c3d4e5f6g 3d4e5f6g7
+c3d4e5f6g 3d4e5f6g7 d4e5f6g7h
+3d4e5f6g7 d4e5f6g7h 4e5f6g7h8
+d4e5f6g7h 4e5f6g7h8 e5f6g7h8i
+4e5f6g7h8 e5f6g7h8i 5f6g7h8i0
+
+b2c3d4e5f 2c3d4e5f6 c3d4e5f6g
+2c3d4e5f6 c3d4e5f6g 3d4e5f6g7
+c3d4e5f6g 3d4e5f6g7 d4e5f6g7h
+3d4e5f6g7 d4e5f6g7h 4e5f6g7h8
+d4e5f6g7h 4e5f6g7h8 e5f6g7h8i
+4e5f6g7h8 e5f6g7h8i 5f6g7h8i0
+e5f6g7h8i 5f6g7h8i0 f6g7h8i0a
+5f6g7h8i0 f6g7h8i0a 6g7h8i0a1
+f6g7h8i0a 6g7h8i0a1 g7h8i0a1b
+
+3d4e5f6g7 d4e5f6g7h 4e5f6g7h8
+d4e5f6g7h 4e5f6g7h8 e5f6g7h8i
+4e5f6g7h8 e5f6g7h8i 5f6g7h8i0
+e5f6g7h8i 5f6g7h8i0 f6g7h8i0a
+5f6g7h8i0 f6g7h8i0a 6g7h8i0a1
+f6g7h8i0a 6g7h8i0a1 g7h8i0a1b
+6g7h8i0a1 g7h8i0a1b 7h8i0a1b2
+g7h8i0a1b 7h8i0a1b2 h8i0a1b2c
+7h8i0a1b2 h8i0a1b2c 8i0a1b2c3
+  </textarea>
+  <div id="controls">
+    <button id="scramble">Scramble</button>
+    <button id="apply_moves">Apply Moves</button>
+  </div>
+  <textarea id="moves"></textarea>
+  <textarea id="solution" readonly></textarea>
+
+  <script src="index.js" type="module"></script>
+</body>
+
+</html>

@@ -1,5 +1,5 @@
 [package]
-name = "cubular"
+name = "cubular_core"
 version = "0.1.0"
 authors = ["tjjfvi <tjjfvi@tjjfvi.com>"]
 edition = "2018"
