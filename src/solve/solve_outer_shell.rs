@@ -129,14 +129,14 @@ impl SolveStep for SolveOuterShell {
   }
   fn get_swap<C: Cube>(&mut self, cube: &C, pos: Pos) -> Option<Swap> {
     match pos {
+      // move the center into position at the end
+      Pos(2, 2, 2) => Some(Swap {
+        index: 100,
+        source: Pos(2, 2, 2),
+        moves: vec![],
+      }),
       p if in_inner(p) => None,
       _ => Some(match pos {
-        // move the center into position at the end
-        Pos(2, 2, 2) => Swap {
-          index: 100,
-          source: Pos(2, 2, 2),
-          moves: vec![],
-        },
         p if p.0 >= 3 || p.1 >= 3 => self
           .get_swap(cube, pos.rotate(Axis::Z, 1, 5))
           .unwrap()
