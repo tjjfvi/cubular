@@ -21,7 +21,7 @@ impl SolveStep for SolveInnerCorners {
       && pos.1 != 4
       && pos.2 != 4
   }
-  fn move_pool<C: Cube>(&mut self, _cube: &C, from: Pos, to: Pos) {
+  fn move_pool<C: Cube>(&mut self, _cube: &mut C, from: Pos, to: Pos) {
     assert_eq!(from, to)
   }
   fn get_swap<C: Cube>(&mut self, _cube: &C, pos: Pos) -> Option<Swap> {
@@ -79,7 +79,7 @@ impl SolveStep for SolveInnerCorners {
       moves,
     })
   }
-  fn apply_move<C: Cube>(&mut self, cube: &C, m: Move) {
+  fn apply_move<C: Cube>(&mut self, cube: &mut C, m: Move) {
     cube.apply_thin_move(m);
   }
 }

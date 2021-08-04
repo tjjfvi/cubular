@@ -17,7 +17,7 @@ impl SolveStep for SolveInnerCross {
       && pos.2 <= 5
       && pos.parity() == 1
   }
-  fn move_pool<C: Cube>(&mut self, cube: &C, from: Pos, to: Pos) {
+  fn move_pool<C: Cube>(&mut self, cube: &mut C, from: Pos, to: Pos) {
     fn f(pos: Pos) -> i8 {
       if pos.0 == 3 {
         if pos.1 == 3 {
@@ -73,7 +73,7 @@ impl SolveStep for SolveInnerCross {
       _ => None,
     }
   }
-  fn apply_move<C: Cube>(&mut self, cube: &C, m: Move) {
+  fn apply_move<C: Cube>(&mut self, cube: &mut C, m: Move) {
     cube.apply_thin_move(m);
   }
 }

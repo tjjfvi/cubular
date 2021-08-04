@@ -1,22 +1,22 @@
 use crate::*;
 
-pub trait ApplyMove: Cube + Sized {
-  fn apply_move(&self, Move(center, axis, amount): Move) {
-    if amount == 0 {
-      return;
-    }
-    let slice = (&*self).slice(center - Pos(1, 1, 1), Pos(3, 3, 3));
-    let mapped: Vec<_> = (&slice).rotate(axis, amount).iter().collect();
-    for (pos, val) in mapped {
-      unsafe { slice.set(pos, val) }
-    }
-  }
-  fn apply_moves(&self, moves: Vec<Move>) {
-    for m in moves {
-      self.apply_move(m);
-    }
-  }
-}
+// pub trait ApplyMove: Cube + Sized {
+//   fn apply_move(&mut self, Move(center, axis, amount): Move) {
+//     if amount == 0 {
+//       return;
+//     }
+//     let mut slice = self.slice(center - Pos(1, 1, 1), Pos(3, 3, 3));
+//     let mapped: Vec<_> = (&mut slice).rotate(axis, amount).iter().collect();
+//     for (pos, val) in mapped {
+//       unsafe { slice.set(pos, val) }
+//     }
+//   }
+//   fn apply_moves(&mut self, moves: Vec<Move>) {
+//     for m in moves {
+//       self.apply_move(m);
+//     }
+//   }
+// }
 
 #[derive(Debug, Clone)]
 pub struct Move(pub Pos, pub Axis, pub i8);
@@ -35,4 +35,4 @@ impl ReverseMoves for Vec<Move> {
   }
 }
 
-impl<T: Cube> ApplyMove for T {}
+// impl<T: Cube> ApplyMove for T {}

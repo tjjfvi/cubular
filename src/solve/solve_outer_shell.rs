@@ -20,7 +20,7 @@ impl SolveStep for SolveOuterShell {
   fn get_solved(&mut self) -> &mut HashSet<Pos> {
     &mut self.0
   }
-  fn move_pool<C: Cube>(&mut self, cube: &C, from: Pos, to: Pos) {
+  fn move_pool<C: Cube>(&mut self, cube: &mut C, from: Pos, to: Pos) {
     let center = Pos(2, 2, 2);
     if from.parity() != to.parity() {
       panic!("Cannot move between positions of different parities");

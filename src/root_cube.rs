@@ -1,9 +1,8 @@
 use lazy_static::lazy_static;
-use std::cell::UnsafeCell;
 
 use crate::*;
 
-pub struct RootCube(pub UnsafeCell<[[[N; 9]; 9]; 9]>);
+pub struct RootCube(pub [[[N; 9]; 9]; 9]);
 
 lazy_static! {
 static ref SOLVED: [[[N; 9]; 9]; 9] = {
@@ -31,19 +30,31 @@ static ref SOLVED: [[[N; 9]; 9]; 9] = {
 impl RootCube {
   #[must_use]
   pub fn solved() -> RootCube {
-    RootCube(UnsafeCell::new(*SOLVED))
+    RootCube(*SOLVED)
   }
 }
 
 impl Cube for RootCube {
   fn get(&self, pos: Pos) -> N {
-    unsafe { (*self.0.get())[pos.0][pos.1][pos.2] }
+    self.0[pos.0][pos.1][pos.2]
   }
   fn get_solved(&self, pos: Pos) -> N {
     SOLVED[pos.0][pos.1][pos.2]
   }
-  unsafe fn set(&self, pos: Pos, val: N) {
-    (*self.0.get())[pos.0][pos.1][pos.2] = val
+  fn apply_move(&mut self, mut m: Move) {
+    m.2 = m.2.rem_euclid(4);
+    if m.2 == 0 {
+      return;
+    }
+    let corner = m.0 - Pos(1, 1, 1);
+    let pairs: Vec<_> = self
+      .slice(corner, Pos(3, 3, 3))
+      .iter()
+      .map(|(p, v)| (p.rotate(m.1, m.2, 3) + corner, v))
+      .collect();
+    for (pos, val) in pairs {
+      self.0[pos.0][pos.1][pos.2] = val;
+    }
   }
   fn size(&self) -> Pos {
     Pos(9, 9, 9)

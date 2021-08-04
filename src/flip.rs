@@ -18,8 +18,10 @@ impl<C: Cube> Cube for Flip<C> {
   fn get_solved(&self, pos: Pos) -> crate::n::N {
     self.cube.get_solved(self.transform_pos(pos))
   }
-  unsafe fn set(&self, pos: Pos, val: N) {
-    self.cube.set(self.transform_pos(pos), val)
+  fn apply_move(&mut self, mut m: Move) {
+    m.0 = self.transform_pos(m.0);
+    m.2 = -m.2;
+    self.cube.apply_move(m);
   }
   fn size(&self) -> Pos {
     self.cube.size()

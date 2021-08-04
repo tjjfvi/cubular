@@ -64,39 +64,59 @@ impl SolveStep for SolveFrontFace {
       }
     })
   }
-  fn move_pool<C: Cube>(&mut self, cube: &C, from: Pos, to: Pos) {
-    cube
-      .slice(Pos(0, 0, 1), cube.size() - Pos(0, 0, 1))
-      .move_piece(from - Pos(0, 0, 1), to - Pos(0, 0, 1))
+  fn move_pool<C: Cube>(&mut self, cube: &mut C, from: Pos, to: Pos) {
+    _move_piece(
+      cube.slice(Pos(0, 0, 1), cube.size() - Pos(0, 0, 1)),
+      from - Pos(0, 0, 1),
+      to - Pos(0, 0, 1),
+    );
   }
 }
 
-// fn _solve(&self) {
-//   for i in 0..=1 {
-//     self._solve_face(Axis::X, Pos(i, i, i));
-//     self._solve_face(Axis::Y, Pos(i + 1, i, i));
-//     self._solve_face(Axis::Z, Pos(i + 1, i + 1, i));
-//   }
-//   for i in 0..=1 {
-//     self._solve_face_flipped(Axis::X, Pos(i, i, i));
-//     self._solve_face_flipped(Axis::Y, Pos(i + 1, i, i));
-//     self._solve_face_flipped(Axis::Z, Pos(i + 1, i + 1, i));
-//   }
-// }
-// fn _solve_face(&self, axis: Axis, offset: Pos) {
-//   self
-//     .slice(offset, self.size() - offset)
-//     .swap_axes(Axis::Z, axis)
-//     ._solve_face_z()
-// }
-// fn _solve_face_flipped(&self, axis: Axis, offset: Pos) {
-//   self
-//     .slice(Pos(2, 2, 2), self.size() - Pos(2, 2, 2) - offset)
-//     .swap_axes(Axis::Z, axis)
-//     .flip(Axis::Z)
-//     ._solve_face_z()
-// }
-// let (x2, y2) = (y..size.1)
-//   .flat_map(|y2| ((if y2 == y { x } else { 0 })..size.0).map(move |x2| (x2, y2)))
-//   .find(|(x2, y2)| self.get(Pos(*x2, *y2, 0)) == value)
-//   .unwrap();
+fn _move_piece<C: Cube>(mut cube: C, mut from: Pos, to: Pos) {
+  if from.parity() != to.parity() {
+    panic!("Cannot move between positions of different parities");
+  }
+  while from != to {
+    _move_piece_axis(&mut cube, Axis::X, &mut from, to);
+    _move_piece_axis(&mut cube, Axis::Y, &mut from, to);
+    _move_piece_axis(&mut cube, Axis::Z, &mut from, to);
+  }
+}
+
+fn _move_piece_axis<C: Cube>(cube: C, axis: Axis, from: &mut Pos, to: Pos) {
+  let mapped = cube.swap_axes(Axis::X, axis);
+  let mut from2 = from.swap_axes(Axis::X, axis);
+  _move_piece_x(mapped, &mut from2, to.swap_axes(Axis::X, axis));
+  *from = from2.swap_axes(Axis::X, axis)
+}
+
+fn _move_piece_x<C: Cube>(mut cube: C, from: &mut Pos, to: Pos) {
+  let size = cube.size();
+  while from.0 != to.0 {
+    let mut center = Pos(0, 0, 0);
+    let amount;
+    if from.0 < to.0 {
+      center.0 = from.0 + 1
+    } else {
+      center.0 = from.0 - 1
+    }
+    if (from.0 + 1 == to.0 || to.0 + 1 == from.0) && from.0 != 0 && from.0 != size.0 - 1 {
+      center.0 = from.0
+    }
+    if from.1 <= 1 {
+      center.1 = from.1 + 1;
+      amount = if from.0 < to.0 { 1 } else { 3 }
+    } else {
+      center.1 = from.1 - 1;
+      amount = if from.0 < to.0 { 3 } else { 1 }
+    }
+    if from.2 <= 1 {
+      center.2 = 1
+    } else {
+      center.2 = from.2 - 1
+    }
+    cube.apply_move(Move(center, Axis::Z, amount));
+    *from = (*from - (center - Pos(1, 1, 1))).rotate(Axis::Z, amount, 3) + (center - Pos(1, 1, 1));
+  }
+}

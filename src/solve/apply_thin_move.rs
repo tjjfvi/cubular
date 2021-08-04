@@ -1,7 +1,7 @@
 use super::*;
 
-pub trait ApplyThinMove: Cube {
-  fn apply_thin_move(&self, Move(center, axis, amount): Move) {
+pub trait ApplyThinMove: Cube + Sized {
+  fn apply_thin_move(&mut self, Move(center, axis, amount): Move) {
     let mut offcenter = center;
     offcenter[axis] -= 1;
     let offaxis = if axis == Axis::X { Axis::Y } else { Axis::X };
@@ -11,7 +11,7 @@ pub trait ApplyThinMove: Cube {
     self.apply_move(Move(center, offaxis, 2));
     self.apply_move(Move(center, axis, -amount));
   }
-  fn apply_thin_moves(&self, moves: Vec<Move>) {
+  fn apply_thin_moves(&mut self, moves: Vec<Move>) {
     for m in moves {
       self.apply_thin_move(m);
     }

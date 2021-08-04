@@ -1,3 +1,5 @@
+use tap::Pipe;
+
 use super::*;
 use std::collections::HashSet;
 
@@ -10,18 +12,18 @@ pub trait SolveStep {
     !self.get_solved().contains(&pos) && self.in_bounds(pos)
   }
   fn get_swap<C: Cube>(&mut self, cube: &C, pos: Pos) -> Option<Swap>;
-  fn move_pool<C: Cube>(&mut self, cube: &C, from: Pos, to: Pos);
-  fn apply_move<C: Cube>(&mut self, cube: &C, m: Move) {
+  fn move_pool<C: Cube>(&mut self, cube: &mut C, from: Pos, to: Pos);
+  fn apply_move<C: Cube>(&mut self, cube: &mut C, m: Move) {
     cube.apply_move(m);
   }
-  fn find_piece<C: Cube>(&mut self, cube: &C, value: N) -> Pos {
+  fn find_piece<C: Cube>(&mut self, cube: &mut C, value: N) -> Pos {
     cube
       .iter()
       .find(|(p, v)| *v == value && self.can_mutate(*p))
       .unwrap()
       .0
   }
-  fn apply<C: Cube>(&mut self, cube: &C) {
+  fn apply<C: Cube>(&mut self, cube: &mut C) {
     let mut todo: Vec<_> = cube
       .iter()
       .map(|x| x.0)
@@ -60,7 +62,7 @@ pub trait SolveStep {
 }
 
 pub trait ApplySolveStep: Cube + Sized {
-  fn apply_solve_step<S: SolveStep + Default>(&self) {
+  fn apply_solve_step<S: SolveStep + Default>(&mut self) {
     S::default().apply(self);
   }
 }

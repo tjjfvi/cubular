@@ -3,34 +3,24 @@ use crate::*;
 pub trait Cube {
   fn get(&self, pos: Pos) -> N;
   fn get_solved(&self, pos: Pos) -> N;
-  unsafe fn set(&self, pos: Pos, val: N);
+  fn apply_move(&mut self, m: Move);
   fn size(&self) -> Pos;
+  fn apply_moves(&mut self, moves: Vec<Move>) {
+    for m in moves {
+      self.apply_move(m);
+    }
+  }
 }
 
-impl<T: Cube + ?Sized> Cube for Box<T> {
+impl<T: Cube + ?Sized> Cube for &mut T {
   fn get(&self, pos: Pos) -> N {
     (**self).get(pos)
   }
   fn get_solved(&self, pos: Pos) -> N {
     (**self).get_solved(pos)
   }
-  unsafe fn set(&self, pos: Pos, val: N) {
-    (**self).set(pos, val)
-  }
-  fn size(&self) -> Pos {
-    (**self).size()
-  }
-}
-
-impl<T: Cube + ?Sized> Cube for &T {
-  fn get(&self, pos: Pos) -> N {
-    (**self).get(pos)
-  }
-  fn get_solved(&self, pos: Pos) -> N {
-    (**self).get_solved(pos)
-  }
-  unsafe fn set(&self, pos: Pos, val: N) {
-    (**self).set(pos, val)
+  fn apply_move(&mut self, m: Move) {
+    (**self).apply_move(m)
   }
   fn size(&self) -> Pos {
     (**self).size()

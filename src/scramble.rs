@@ -3,7 +3,7 @@ use rand::Rng;
 use crate::*;
 
 pub trait Scramble: Cube + Sized {
-  fn scramble(&self, iterations: u32) {
+  fn scramble(&mut self, iterations: u32) {
     let mut rng = rand::thread_rng();
     let size = self.size();
     for _ in 0..iterations {
