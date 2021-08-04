@@ -1,15 +1,8 @@
-use std::collections::HashSet;
-
 use super::*;
 
-#[derive(Default)]
-pub struct SolveFrontFace(HashSet<Pos>);
-
+pub struct SolveFrontFace;
 impl SolveStep for SolveFrontFace {
-  fn get_solved(&mut self) -> &mut HashSet<Pos> {
-    &mut self.0
-  }
-  fn get_swap<C: Cube>(&mut self, cube: &C, pos: Pos) -> Option<Swap> {
+  fn get_swap<C: Cube>(&self, cube: &C, pos: Pos) -> Option<Swap> {
     let size = cube.size();
     let Pos(x, y, z) = pos;
     if z != 0 {
@@ -64,7 +57,7 @@ impl SolveStep for SolveFrontFace {
       }
     })
   }
-  fn move_pool<C: Cube>(&mut self, cube: &mut C, from: Pos, to: Pos) {
+  fn move_pool<C: Cube>(&self, cube: &mut C, from: Pos, to: Pos) {
     _move_piece(
       cube.slice(Pos(0, 0, 1), cube.size() - Pos(0, 0, 1)),
       from - Pos(0, 0, 1),

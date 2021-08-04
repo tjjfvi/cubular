@@ -1,6 +1,5 @@
 use super::*;
 use lazy_static::lazy_static;
-use std::collections::HashSet;
 use tap::Tap;
 
 lazy_static! {
@@ -13,14 +12,10 @@ lazy_static! {
   static ref INTO_CENTER_REVERSE: Vec<Move> = INTO_CENTER.clone().reverse_moves();
 }
 
-#[derive(Default)]
-pub struct SolveOuterShell(HashSet<Pos>);
+pub struct SolveOuterShell;
 
 impl SolveStep for SolveOuterShell {
-  fn get_solved(&mut self) -> &mut HashSet<Pos> {
-    &mut self.0
-  }
-  fn move_pool<C: Cube>(&mut self, cube: &mut C, from: Pos, to: Pos) {
+  fn move_pool<C: Cube>(&self, cube: &mut C, from: Pos, to: Pos) {
     let center = Pos(2, 2, 2);
     if from.parity() != to.parity() {
       panic!("Cannot move between positions of different parities");
@@ -127,7 +122,7 @@ impl SolveStep for SolveOuterShell {
       }
     }
   }
-  fn get_swap<C: Cube>(&mut self, cube: &C, pos: Pos) -> Option<Swap> {
+  fn get_swap<C: Cube>(&self, cube: &C, pos: Pos) -> Option<Swap> {
     match pos {
       // move the center into position at the end
       Pos(2, 2, 2) => Some(Swap {

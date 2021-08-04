@@ -31,10 +31,10 @@ pub trait Solve: Cube + Sized {
     }
     self
       .slice(Pos(2, 2, 2), Pos(5, 5, 5))
-      .apply_solve_step::<SolveOuterShell>();
-    self.apply_solve_step::<SolveInnerCross>();
-    self.apply_solve_step::<SolveInnerEdges>();
-    self.apply_solve_step::<SolveInnerCorners>();
+      .apply_solve_step(SolveOuterShell);
+    self.apply_solve_step(SolveInnerCross);
+    self.apply_solve_step(SolveInnerEdges);
+    self.apply_solve_step(SolveInnerCorners);
   }
 }
 
@@ -43,14 +43,14 @@ trait _Solve: Cube {
     self
       .slice(offset, self.size() - offset)
       .swap_axes(Axis::Z, axis)
-      .apply_solve_step::<SolveFrontFace>()
+      .apply_solve_step(SolveFrontFace);
   }
   fn _solve_face_flipped(&mut self, axis: Axis, offset: Pos) {
     self
       .slice(Pos(2, 2, 2), self.size() - Pos(2, 2, 2) - offset)
       .swap_axes(Axis::Z, axis)
       .flip(Axis::Z)
-      .apply_solve_step::<SolveFrontFace>()
+      .apply_solve_step(SolveFrontFace);
   }
 }
 

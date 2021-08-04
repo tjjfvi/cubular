@@ -1,14 +1,8 @@
 use super::*;
-use std::collections::HashSet;
 
-#[derive(Default)]
-pub struct SolveInnerCross(HashSet<Pos>);
-
+pub struct SolveInnerCross;
 impl SolveStep for SolveInnerCross {
-  fn get_solved(&mut self) -> &mut HashSet<Pos> {
-    &mut self.0
-  }
-  fn in_bounds(&mut self, pos: Pos) -> bool {
+  fn in_bounds(&self, pos: Pos) -> bool {
     pos.0 >= 3
       && pos.0 <= 5
       && pos.1 >= 3
@@ -17,7 +11,7 @@ impl SolveStep for SolveInnerCross {
       && pos.2 <= 5
       && pos.parity() == 1
   }
-  fn move_pool<C: Cube>(&mut self, cube: &mut C, from: Pos, to: Pos) {
+  fn move_pool<C: Cube>(&self, cube: &mut C, from: Pos, to: Pos) {
     fn f(pos: Pos) -> i8 {
       if pos.0 == 3 {
         if pos.1 == 3 {
@@ -38,7 +32,7 @@ impl SolveStep for SolveInnerCross {
       cube.apply_thin_move(Move(Pos(4, to.1, 4), Axis::Y, (to.0 + to.2 - 1) as i8 % 4));
     }
   }
-  fn get_swap<C: Cube>(&mut self, _cube: &C, pos: Pos) -> Option<Swap> {
+  fn get_swap<C: Cube>(&self, _cube: &C, pos: Pos) -> Option<Swap> {
     match pos {
       Pos(x, 4, 4) => Some(Swap {
         index: 0,
@@ -73,7 +67,7 @@ impl SolveStep for SolveInnerCross {
       _ => None,
     }
   }
-  fn apply_move<C: Cube>(&mut self, cube: &mut C, m: Move) {
+  fn apply_move<C: Cube>(&self, cube: &mut C, m: Move) {
     cube.apply_thin_move(m);
   }
 }

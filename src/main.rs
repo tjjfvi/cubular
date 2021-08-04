@@ -1,9 +1,9 @@
-mod apply_move;
 mod cube;
 mod cube_iter;
 mod display_cube;
 mod flip;
 mod is_solved;
+mod r#move;
 mod n;
 mod pos;
 mod root_cube;
@@ -14,7 +14,6 @@ mod swap_axes;
 
 use std::time::Instant;
 
-pub(crate) use apply_move::*;
 pub(crate) use cube::*;
 pub(crate) use cube_iter::*;
 pub(crate) use display_cube::*;
@@ -22,6 +21,7 @@ pub(crate) use flip::*;
 pub(crate) use is_solved::*;
 pub(crate) use n::*;
 pub(crate) use pos::*;
+pub(crate) use r#move::*;
 pub(crate) use root_cube::*;
 pub(crate) use scramble::*;
 pub(crate) use slice::*;

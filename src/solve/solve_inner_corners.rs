@@ -1,14 +1,8 @@
 use super::*;
-use std::collections::HashSet;
 
-#[derive(Default)]
-pub struct SolveInnerCorners(HashSet<Pos>);
-
+pub struct SolveInnerCorners;
 impl SolveStep for SolveInnerCorners {
-  fn get_solved(&mut self) -> &mut HashSet<Pos> {
-    &mut self.0
-  }
-  fn in_bounds(&mut self, pos: Pos) -> bool {
+  fn in_bounds(&self, pos: Pos) -> bool {
     true
       && pos.0 >= 3
       && pos.0 <= 5
@@ -21,10 +15,10 @@ impl SolveStep for SolveInnerCorners {
       && pos.1 != 4
       && pos.2 != 4
   }
-  fn move_pool<C: Cube>(&mut self, _cube: &mut C, from: Pos, to: Pos) {
+  fn move_pool<C: Cube>(&self, _cube: &mut C, from: Pos, to: Pos) {
     assert_eq!(from, to)
   }
-  fn get_swap<C: Cube>(&mut self, _cube: &C, pos: Pos) -> Option<Swap> {
+  fn get_swap<C: Cube>(&self, _cube: &C, pos: Pos) -> Option<Swap> {
     let initial_moves = match pos {
       Pos(3, 3, 3) => return None, // once all of the others are solved, this must be too
       Pos(5, 5, 3) => vec![],
@@ -53,25 +47,7 @@ impl SolveStep for SolveInnerCorners {
       _ => panic!("Unreachable"),
     };
     let mut moves = initial_moves.clone();
-    moves.extend(vec![
-      Move(Pos(4, 5, 4), Axis::Y, 1),  // F
-      Move(Pos(5, 4, 4), Axis::X, -1), // R
-      Move(Pos(4, 4, 3), Axis::Z, -1), // U'
-      Move(Pos(5, 4, 4), Axis::X, 1),  // R'
-      Move(Pos(4, 4, 3), Axis::Z, -1), // U'
-      Move(Pos(5, 4, 4), Axis::X, -1), // R
-      Move(Pos(4, 4, 3), Axis::Z, 1),  // U
-      Move(Pos(5, 4, 4), Axis::X, 1),  // R'
-      Move(Pos(4, 5, 4), Axis::Y, -1), // F'
-      Move(Pos(5, 4, 4), Axis::X, -1), // R
-      Move(Pos(4, 4, 3), Axis::Z, 1),  // U
-      Move(Pos(5, 4, 4), Axis::X, 1),  // R'
-      Move(Pos(4, 4, 3), Axis::Z, -1), // U'
-      Move(Pos(5, 4, 4), Axis::X, 1),  // R'
-      Move(Pos(4, 5, 4), Axis::Y, 1),  // F
-      Move(Pos(5, 4, 4), Axis::X, -1), // R
-      Move(Pos(4, 5, 4), Axis::Y, -1), // F'
-    ]);
+    moves.extend_from_slice(&Y_PERMUTATION);
     moves.extend(initial_moves.reverse_moves());
     Some(Swap {
       index: if pos == Pos(5, 4, 3) { 1 } else { 0 },
@@ -79,7 +55,27 @@ impl SolveStep for SolveInnerCorners {
       moves,
     })
   }
-  fn apply_move<C: Cube>(&mut self, cube: &mut C, m: Move) {
+  fn apply_move<C: Cube>(&self, cube: &mut C, m: Move) {
     cube.apply_thin_move(m);
   }
 }
+
+static Y_PERMUTATION: [Move; 17] = [
+  Move(Pos(4, 5, 4), Axis::Y, 1),  // F
+  Move(Pos(5, 4, 4), Axis::X, -1), // R
+  Move(Pos(4, 4, 3), Axis::Z, -1), // U'
+  Move(Pos(5, 4, 4), Axis::X, 1),  // R'
+  Move(Pos(4, 4, 3), Axis::Z, -1), // U'
+  Move(Pos(5, 4, 4), Axis::X, -1), // R
+  Move(Pos(4, 4, 3), Axis::Z, 1),  // U
+  Move(Pos(5, 4, 4), Axis::X, 1),  // R'
+  Move(Pos(4, 5, 4), Axis::Y, -1), // F'
+  Move(Pos(5, 4, 4), Axis::X, -1), // R
+  Move(Pos(4, 4, 3), Axis::Z, 1),  // U
+  Move(Pos(5, 4, 4), Axis::X, 1),  // R'
+  Move(Pos(4, 4, 3), Axis::Z, -1), // U'
+  Move(Pos(5, 4, 4), Axis::X, 1),  // R'
+  Move(Pos(4, 5, 4), Axis::Y, 1),  // F
+  Move(Pos(5, 4, 4), Axis::X, -1), // R
+  Move(Pos(4, 5, 4), Axis::Y, -1), // F'
+];
