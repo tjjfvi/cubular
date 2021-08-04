@@ -92,6 +92,7 @@ fn _move_piece_axis<C: Cube>(cube: C, axis: Axis, from: &mut Pos, to: Pos) {
 }
 
 fn _move_piece_x<C: Cube>(mut cube: C, from: &mut Pos, to: Pos) {
+  let val = cube.get(*from);
   let size = cube.size();
   while from.0 != to.0 {
     let mut center = Pos(0, 0, 0);
@@ -118,5 +119,6 @@ fn _move_piece_x<C: Cube>(mut cube: C, from: &mut Pos, to: Pos) {
     }
     cube.apply_move(Move(center, Axis::Z, amount));
     *from = (*from - (center - Pos(1, 1, 1))).rotate(Axis::Z, amount, 3) + (center - Pos(1, 1, 1));
+    debug_assert_eq!(cube.get(*from), val);
   }
 }

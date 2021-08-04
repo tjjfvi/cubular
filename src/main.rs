@@ -32,8 +32,7 @@ fn main() {
   let start = Instant::now();
   let mut cube = RootCube::solved();
   cube.print();
-  cube.apply_move(Move(Pos(1, 1, 1), Axis::Z, 1));
-  // cube.scramble(1000);
+  cube.scramble(1000);
   cube.solve();
   cube.print();
   println!("{:?}", start.elapsed());

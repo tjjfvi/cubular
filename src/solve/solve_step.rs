@@ -1,5 +1,3 @@
-use tap::Pipe;
-
 use super::*;
 use std::collections::HashSet;
 
@@ -47,16 +45,16 @@ pub trait SolveStep {
         for m in from_swap.moves.reverse_moves() {
           self.apply_move(cube, m);
         }
-        // assert_eq!(cube.get(from_swap.source), solved_value);
+        debug_assert_eq!(cube.get(from_swap.source), solved_value);
         self.move_pool(cube, from_swap.source, swap.source);
       } else {
         self.move_pool(cube, from, swap.source);
       }
-      // assert_eq!(cube.get(swap.source), solved_value);
+      debug_assert_eq!(cube.get(swap.source), solved_value);
       for m in swap.moves {
         self.apply_move(cube, m);
       }
-      // assert_eq!(cube.get(pos), solved_value);
+      debug_assert_eq!(cube.get(pos), solved_value);
     }
   }
 }

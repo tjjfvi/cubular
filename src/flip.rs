@@ -20,7 +20,9 @@ impl<C: Cube> Cube for Flip<C> {
   }
   fn apply_move(&mut self, mut m: Move) {
     m.0 = self.transform_pos(m.0);
-    m.2 = -m.2;
+    if m.1 != self.axis {
+      m.2 = -m.2;
+    }
     self.cube.apply_move(m);
   }
   fn size(&self) -> Pos {
