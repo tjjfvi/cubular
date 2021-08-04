@@ -16,6 +16,8 @@ mod slice;
 mod solve;
 mod swap_axes;
 
+use std::time::Instant;
+
 pub(crate) use apply_move::*;
 pub(crate) use cube::*;
 pub(crate) use cube_iter::*;
@@ -35,9 +37,11 @@ pub(crate) use solve::*;
 pub(crate) use swap_axes::*;
 
 fn main() {
+  let start = Instant::now();
   let cube = RootCube::solved();
   cube.apply_move(Move(Pos(1, 1, 1), Axis::Z, 2));
   // cube.scramble(1000);
   cube.solve();
   cube.print();
+  println!("{:?}", start.elapsed());
 }

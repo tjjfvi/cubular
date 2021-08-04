@@ -2,6 +2,7 @@ use crate::*;
 
 #[derive(Debug)]
 pub struct Swap {
+  pub index: usize,
   pub source: Pos,
   pub moves: Vec<Move>,
 }
