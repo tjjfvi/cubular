@@ -8,7 +8,7 @@ pub struct RootCube {
 }
 
 lazy_static! {
-static ref SOLVED: [[[Value; 9]; 9]; 9] = {
+pub static ref SOLVED: [[[Value; 9]; 9]; 9] = {
   #[inline(never)] // Prevent huge compiled sizes
   fn x9<F: Fn((usize, I)) -> T, I: Copy, T>(cb: F) -> impl Fn(I) -> [T; 9] {
     move |i| {
@@ -32,11 +32,14 @@ static ref SOLVED: [[[Value; 9]; 9]; 9] = {
 
 impl RootCube {
   #[must_use]
-  pub fn solved() -> RootCube {
+  pub fn new(values: [[[Value; 9]; 9]; 9]) -> RootCube {
     RootCube {
-      values: *SOLVED,
+      values,
       moves: vec![],
     }
+  }
+  pub fn solved() -> RootCube {
+    RootCube::new(*SOLVED)
   }
   pub fn reset_moves(&mut self) {
     self.moves.clear();

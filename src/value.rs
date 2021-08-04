@@ -3,7 +3,7 @@ use std::{
   ops::{Add, Sub},
 };
 
-#[derive(PartialEq, Eq, Hash, Copy, Clone)]
+#[derive(PartialEq, Eq, Hash, Copy, Clone, Default)]
 pub struct Value(pub usize);
 
 impl From<usize> for Value {
