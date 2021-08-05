@@ -30,7 +30,7 @@ impl ExternCube {
   }
 
   pub fn set(&mut self, str: &str) -> Result<(), JsValue> {
-    parse_cube(&mut self.current_state, str)?;
+    self.current_state = parse_cube(str)?;
     self.queued_state = self.current_state;
     self.queued_moves.clear();
     Ok(())

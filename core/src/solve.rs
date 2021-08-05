@@ -51,6 +51,8 @@ trait _Solve: Cube {
     self
       .slice(min, max - min)
       .swap_axes(Axis::Z, axis)
+      .flip(Axis::X)
+      .flip(Axis::Y)
       .flip(Axis::Z)
       .apply_solve_step(SolveFrontFace);
   }

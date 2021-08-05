@@ -4,7 +4,7 @@ use regex::Regex;
 
 use crate::*;
 
-pub fn parse_cube(cube: &mut [[[Value; 9]; 9]; 9], str: &str) -> Result<(), String> {
+pub fn parse_cube(str: &str) -> Result<[[[Value; 9]; 9]; 9], String> {
   let str = str.to_lowercase();
   let str = str.trim();
   let charset = if str.contains('a') {
@@ -15,6 +15,7 @@ pub fn parse_cube(cube: &mut [[[Value; 9]; 9]; 9], str: &str) -> Result<(), Stri
     "123456789"
   };
   let mut z = 0;
+  let mut cube: [[[Value; 9]; 9]; 9] = Default::default();
   lazy_static! {
     static ref PARAGRAPH_SEP: Regex = Regex::new(r"\s*\n\s*\n\s*").unwrap();
   }
@@ -55,7 +56,7 @@ pub fn parse_cube(cube: &mut [[[Value; 9]; 9]; 9], str: &str) -> Result<(), Stri
     }
     z = z2;
   }
-  if <[_]>::iter(cube)
+  if <[_]>::iter(&cube)
     .flatten()
     .flatten()
     .collect::<HashBag<_>>()
@@ -63,5 +64,5 @@ pub fn parse_cube(cube: &mut [[[Value; 9]; 9]; 9], str: &str) -> Result<(), Stri
   {
     return Err(format!("Invalid piece counts"));
   }
-  Ok(())
+  Ok(cube)
 }
