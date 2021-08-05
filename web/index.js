@@ -5,12 +5,9 @@ import('./pkg/index.js').then(rs => {
   const consoleDiv = document.getElementById("console");
   const inputSpan = document.querySelector("#input span");
   const logsDiv = document.querySelector("#logs");
+  let charset = rs.ExternCharset.Alpha;
 
-  writeLine(`
-cubular v1.0.0
-
-Type "help" for a list of available commands.
-`);
+  writeLine(getHelpText());
 
   updateCubePre();
 
@@ -55,7 +52,10 @@ Type "help" for a list of available commands.
     str = str.trim().toLowerCase();
     const [cmd, ...args] = str.split(" ");
     if (cmd === "?" || cmd === "h" || cmd === "help")
-      writeLine(helpText);
+      writeLine(getHelpText());
+    else if (str === "[edited cube configuration]") {
+      writeLine("Lies.")
+    }
     else if (cmd === "clear")
       logsDiv.innerHTML = "";
     else if (cmd === "solve") {
@@ -64,23 +64,53 @@ Type "help" for a list of available commands.
       updateCubePre();
       writeLine(cube.get_moves());
       cube.reset_moves();
-    } else if (cmd === "scramble") {
+    }
+    else if (cmd === "scramble") {
       cube.scramble(+args[0] || 1000);
       updateCubePre();
       cube.reset_moves();
-    } else if (cmd === "reset") {
+    }
+    else if (cmd === "reset") {
       cube.reset_state();
       updateCubePre();
-    } else if (/\d\d\d[xyz]\d/.test(cmd)) {
+    }
+    else if (/\d\d\d[xyz]\d/.test(cmd)) {
       try {
         cube.apply_moves(cmd.toUpperCase())
         updateCubePre();
       } catch (e) {
         writeLine(e);
       }
-    } else if (cmd) {
+    }
+    else if (cmd === "set") {
+      setConfig(args[0], args[1])
+    }
+    else if (cmd) {
       writeLine(`Unknown command "${str}".\nType "help" for a list of available commands.`)
       console.log(str);
+    }
+  }
+
+  function setConfig(key, value) {
+    switch (key) {
+      case "charset":
+        switch (value) {
+          case "alpha":
+            charset = rs.ExternCharset.Alpha;
+            break;
+          case "one_mod_nine":
+            charset = rs.ExternCharset.OneModNine;
+            break;
+          case "zero_mod_nine":
+            charset = rs.ExternCharset.ZeroModNine;
+            break;
+          default:
+            writeLine(`Invalid value "${value}" for configuration key "alpha".`)
+        }
+        updateCubePre();
+        break;
+      default:
+        writeLine(`Unknown configuration key "${key}".`)
     }
   }
 
@@ -91,11 +121,13 @@ Type "help" for a list of available commands.
   }
 
   function updateCubePre() {
-    cubePre.innerText = cube.to_string();
+    cubePre.innerText = cube.to_string(charset);
   }
-})
 
-const helpText = `
+  function getHelpText() {
+    return `
+cubular v1.0.0
+
 Available commands:
   help               Print this message.
   solve              Solve the puzzle.
@@ -103,4 +135,18 @@ Available commands:
   123X1              Apply a move to the puzzle.
   clear              Clear the console.
   reset              Reset the cube.
-`.trim()
+  set [key] [value]  Change a configuration value.
+
+Configuration:
+  charset: ${(
+        charset === rs.ExternCharset.Alpha
+          ? "alpha"
+          : charset === rs.ExternCharset.OneModNine
+            ? "one_mod_nine"
+            : "zero_mod_nine"
+      )} (alpha | zero_mod_nine | one_mod_nine)
+    What characters to use to display the cube. Defaults to "alpha".
+    "one_mod_nine" is what's used in the challenge description.
+`.trimEnd()
+  }
+})

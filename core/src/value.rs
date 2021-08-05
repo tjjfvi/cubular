@@ -1,5 +1,5 @@
 use std::{
-  fmt::{self, Debug, Display, Write},
+  fmt::{self, Debug, Write},
   ops::{Add, Sub},
 };
 
@@ -27,22 +27,39 @@ impl Sub<Value> for Value {
   }
 }
 
-static CHARS: [char; 18] = [
-  // '0', 'b', '2', 'd', '4', 'f', '6', 'h', '8', 'a', '1', 'c', '3', 'e', '5', 'g', '6', 'i',
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash)]
+pub enum ValueCharset {
+  Alpha,
+  ZeroModNine,
+  OneModNine,
+}
+
+static CHARSET_ALPHA: [char; 18] = [
   '0', 'a', '1', 'b', '2', 'c', '3', 'd', '4', 'e', '5', 'f', '6', 'g', '7', 'h', '8', 'i',
 ];
 
-impl Display for Value {
-  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> fmt::Result {
-    f.write_char(CHARS[self.0])?;
-    Ok(())
+static CHARSET_ZERO_MOD_NINE: [char; 18] = [
+  '0', '1', '2', '3', '4', '5', '6', '7', '8', '0', '1', '2', '3', '4', '5', '6', '7', '8',
+];
+
+static CHARSET_ONE_MOD_NINE: [char; 18] = [
+  '1', '2', '3', '4', '5', '6', '7', '8', '9', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+];
+
+impl Value {
+  pub fn to_char(&self, charset: ValueCharset) -> char {
+    (match charset {
+      ValueCharset::Alpha => CHARSET_ALPHA,
+      ValueCharset::ZeroModNine => CHARSET_ZERO_MOD_NINE,
+      ValueCharset::OneModNine => CHARSET_ONE_MOD_NINE,
+    })[self.0]
   }
 }
 
 impl Debug for Value {
   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> fmt::Result {
     f.write_str("N(")?;
-    f.write_char(CHARS[self.0])?;
+    f.write_char(CHARSET_ALPHA[self.0])?;
     f.write_str(")")?;
     Ok(())
   }

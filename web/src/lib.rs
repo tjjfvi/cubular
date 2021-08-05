@@ -5,6 +5,13 @@ use wasm_bindgen::prelude::*;
 pub struct ExternCube(RootCube);
 
 #[wasm_bindgen]
+pub enum ExternCharset {
+  Alpha,
+  ZeroModNine,
+  OneModNine,
+}
+
+#[wasm_bindgen]
 impl ExternCube {
   pub fn new() -> ExternCube {
     ExternCube(RootCube::solved())
@@ -36,8 +43,16 @@ impl ExternCube {
     self.0.scramble(iterations)
   }
 
-  pub fn to_string(&self) -> String {
-    DisplayCube(&self.0).to_string()
+  pub fn to_string(&self, charset: ExternCharset) -> String {
+    DisplayCube(
+      &self.0,
+      match charset {
+        ExternCharset::Alpha => ValueCharset::Alpha,
+        ExternCharset::OneModNine => ValueCharset::OneModNine,
+        ExternCharset::ZeroModNine => ValueCharset::ZeroModNine,
+      },
+    )
+    .to_string()
   }
 
   pub fn apply_moves(&mut self, moves_str: String) -> Result<(), JsValue> {

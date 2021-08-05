@@ -4,7 +4,7 @@ use colored::Colorize;
 
 use crate::*;
 
-pub struct DisplayCube<'a, T: Cube + 'a>(pub &'a T);
+pub struct DisplayCube<'a, T: Cube + 'a>(pub &'a T, pub ValueCharset);
 
 impl<'a, T: Cube + 'a> Display for DisplayCube<'a, T> {
   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -27,7 +27,7 @@ impl<'a, T: Cube + 'a> Display for DisplayCube<'a, T> {
               f.write_str(" ")?;
             }
             let pos = Pos(col, row, grid);
-            let mut str = self.0.get(pos).to_string();
+            let mut str = self.0.get(pos).to_char(self.1).to_string();
             if self.0.get(pos) == self.0.get_solved(pos) {
               str = str.green().to_string();
             }
@@ -40,15 +40,9 @@ impl<'a, T: Cube + 'a> Display for DisplayCube<'a, T> {
   }
 }
 
-impl<'a, T: Cube + 'a> From<&'a T> for DisplayCube<'a, T> {
-  fn from(arg: &'a T) -> Self {
-    DisplayCube(arg)
-  }
-}
-
 pub trait PrintCube: Cube + Sized {
   fn print(&self) {
-    println!("\n{}\n", DisplayCube(self));
+    println!("\n{}\n", DisplayCube(self, ValueCharset::Alpha));
   }
 }
 
