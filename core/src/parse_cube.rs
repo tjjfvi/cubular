@@ -4,7 +4,7 @@ use regex::Regex;
 
 use crate::*;
 
-pub fn parse_cube(str: &str) -> Result<RootCube, String> {
+pub fn parse_cube(cube: &mut RootCube, str: &str) -> Result<(), String> {
   let str = str.to_lowercase();
   let str = str.trim();
   let charset = if str.contains('a') {
@@ -14,15 +14,14 @@ pub fn parse_cube(str: &str) -> Result<RootCube, String> {
   } else {
     "123456789"
   };
-  let mut values: [[[Value; 9]; 9]; 9] = Default::default();
   let mut z = 0;
-  for paragraph in str.split("\n\n") {
+  lazy_static! {
+    static ref PARAGRAPH_SEP: Regex = Regex::new(r"\s*\n\s*\n\s*").unwrap();
+  }
+  for paragraph in PARAGRAPH_SEP.split(str) {
     let paragraph = paragraph.trim();
     let mut z2 = z;
-    lazy_static! {
-      static ref PARAGRAPH_SEP: Regex = Regex::new(r"\s*\n\s*\n\s*").unwrap();
-    }
-    for (y, line) in PARAGRAPH_SEP.split(paragraph).enumerate() {
+    for (y, line) in paragraph.split("\n").enumerate() {
       let line = line.trim();
       z2 = z;
       let row_sep = if line.chars().nth(1) == Some(' ') {
@@ -35,7 +34,7 @@ pub fn parse_cube(str: &str) -> Result<RootCube, String> {
         for (x, char) in row.chars().filter(|x| *x != ' ').enumerate() {
           if x >= 9 || y >= 9 || z2 >= 9 {
             dbg!((x, y, z2));
-            return Err(format!("Invalid cube size"));
+            return Err(format!("Invalid cube size {:?}", (x, y, z2)));
           }
           let mut value = if let Some(index) = charset.find(char) {
             index
@@ -49,17 +48,22 @@ pub fn parse_cube(str: &str) -> Result<RootCube, String> {
               return Err(format!("Invalid parity at position {:?}", (x, y, z2)));
             }
           };
-          values[x][y][z2].0 = value;
+          cube.values[x][y][z2].0 = value;
         }
         z2 += 1;
       }
     }
     z = z2;
   }
-  if values.iter().flatten().flatten().collect::<HashBag<_>>()
+  if cube
+    .values
+    .iter()
+    .flatten()
+    .flatten()
+    .collect::<HashBag<_>>()
     != SOLVED.iter().flatten().flatten().collect()
   {
     return Err(format!("Invalid piece counts"));
   }
-  Ok(RootCube::new(values))
+  Ok(())
 }

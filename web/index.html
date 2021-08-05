@@ -8,59 +8,69 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body {
-      display: grid;
-      grid-template-columns: auto;
-      grid-template-rows: auto;
-      grid-template-areas:
-        "cube     solution"
-        "controls soltuion"
-        "moves    solution";
+      margin: 0;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      font-family: "Inconsolata", monospace;
+      font-size: 15px;
     }
 
-    pre {
+    * {
+      outline: none;
+    }
+
+    #cube {
+      grid-area: cube;
+      flex-grow: 1;
+      flex-basis: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #cube textarea {
+      font-family: "Inconsolata", monospace;
+      font-size: inherit;
+      border: none;
+      resize: none;
+      width: auto;
+      height: auto;
+    }
+
+    #console {
+      grid-area: console;
+      flex-grow: 1;
+      flex-basis: 0;
+      display: flex;
+      flex-direction: column;
       overflow: auto;
+    }
+
+    #console #logs {
+      display: flex;
+      flex-direction: column;
+      white-space: pre;
     }
   </style>
 </head>
 
 <body>
-  <textarea id="cube">
-0a1b2c3d4 a1b2c3d4e 1b2c3d4e5
-a1b2c3d4e 1b2c3d4e5 b2c3d4e5f
-1b2c3d4e5 b2c3d4e5f 2c3d4e5f6
-b2c3d4e5f 2c3d4e5f6 c3d4e5f6g
-2c3d4e5f6 c3d4e5f6g 3d4e5f6g7
-c3d4e5f6g 3d4e5f6g7 d4e5f6g7h
-3d4e5f6g7 d4e5f6g7h 4e5f6g7h8
-d4e5f6g7h 4e5f6g7h8 e5f6g7h8i
-4e5f6g7h8 e5f6g7h8i 5f6g7h8i0
-
-b2c3d4e5f 2c3d4e5f6 c3d4e5f6g
-2c3d4e5f6 c3d4e5f6g 3d4e5f6g7
-c3d4e5f6g 3d4e5f6g7 d4e5f6g7h
-3d4e5f6g7 d4e5f6g7h 4e5f6g7h8
-d4e5f6g7h 4e5f6g7h8 e5f6g7h8i
-4e5f6g7h8 e5f6g7h8i 5f6g7h8i0
-e5f6g7h8i 5f6g7h8i0 f6g7h8i0a
-5f6g7h8i0 f6g7h8i0a 6g7h8i0a1
-f6g7h8i0a 6g7h8i0a1 g7h8i0a1b
-
-3d4e5f6g7 d4e5f6g7h 4e5f6g7h8
-d4e5f6g7h 4e5f6g7h8 e5f6g7h8i
-4e5f6g7h8 e5f6g7h8i 5f6g7h8i0
-e5f6g7h8i 5f6g7h8i0 f6g7h8i0a
-5f6g7h8i0 f6g7h8i0a 6g7h8i0a1
-f6g7h8i0a 6g7h8i0a1 g7h8i0a1b
-6g7h8i0a1 g7h8i0a1b 7h8i0a1b2
-g7h8i0a1b 7h8i0a1b2 h8i0a1b2c
-7h8i0a1b2 h8i0a1b2c 8i0a1b2c3
-  </textarea>
-  <div id="controls">
-    <button id="scramble">Scramble</button>
-    <button id="apply_moves">Apply Moves</button>
+  <div id="cube">
+    <pre contenteditable></pre>
   </div>
-  <textarea id="moves"></textarea>
-  <textarea id="solution" readonly></textarea>
+  <div id="console">
+    <div id="logs"></div>
+    <div id="input">
+      <br>
+      &gt;&nbsp;<span contenteditable></span>
+      <br>
+      <br>
+      <br>
+      <br>
+      <br>
+    </div>
+  </div>
 
   <script src="index.js" type="module"></script>
 </body>

@@ -17,7 +17,7 @@ pub fn get_move_str(Move(Pos(x, y, z), axis, amount): &Move) -> String {
   )
 }
 
-pub fn get_moves_str(moves: Vec<Move>) -> String {
+pub fn get_moves_str(moves: &Vec<Move>) -> String {
   moves
     .iter()
     .map(get_move_str)
