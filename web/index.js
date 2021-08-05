@@ -27,11 +27,9 @@ import('./pkg/index.js').then(rs => {
 
   let demoPhase = null;
 
-  inputSpan.focus();
   inputSpan.textContent = "demo";
-
+  focusInputSpan();
   writeLine(getHelpText());
-
   tick();
 
   cubePre.addEventListener("paste", e => {
@@ -40,7 +38,7 @@ import('./pkg/index.js').then(rs => {
     document.execCommand("insertHTML", false, text);
 
     if (cubePre.innerText === text)
-      inputSpan.focus();
+      focusInputSpan();
   });
 
   inputSpan.addEventListener("paste", e => {
@@ -50,7 +48,8 @@ import('./pkg/index.js').then(rs => {
   });
 
   consoleDiv.addEventListener("click", e => {
-    inputSpan.focus()
+    if (window.getSelection().type === "Caret") // Allow selection of console text
+      focusInputSpan();
   });
 
   inputSpan.addEventListener("keydown", e => {
@@ -247,5 +246,17 @@ Configuration:
   delay: ${moveDelay} (number)
     The time in milliseconds to wait between each move. Defaults to 5.
 `.trimEnd()
+  }
+
+  function focusInputSpan() {
+    inputSpan.focus();
+    if (inputSpan.childNodes.length) {
+      let selection = window.getSelection()
+      let range = document.createRange();
+      range.setStart(inputSpan.childNodes[0], inputSpan.innerText.length)
+      range.collapse(true)
+      selection.removeAllRanges()
+      selection.addRange(range)
+    }
   }
 })
