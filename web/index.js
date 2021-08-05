@@ -159,14 +159,18 @@ import('./pkg/index.js').then(rs => {
       let done = !cube.flush_moves(deltaTime / demoScrambleDelay);
       paint();
       if (done) {
-        demoPhase = "solve";
-        writeLine("Scrambled.");
-        let moveCount = cube.solve();
-        writeLine(`Found ${moveCount} move solution.`);
-        timeout = setTimeout(() => {
-          writeLine("Displaying solution...");
-          tick()
-        }, 2000);
+        // Release main thread so the browser can paint
+        setTimeout(() => {
+          demoPhase = "solve";
+          writeLine("Scrambled.");
+          let moveCount = cube.solve();
+          writeLine(`Found ${moveCount} move solution.`);
+          timeout = setTimeout(() => {
+            writeLine("Displaying solution...");
+            lastTick = Date.now() - demoSolveDelay;
+            tick()
+          }, 2000);
+        })
       }
       else
         timeout = setTimeout(tick, demoScrambleDelay);
