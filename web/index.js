@@ -5,7 +5,10 @@ import('./pkg/index.js').then(rs => {
   const consoleDiv = document.getElementById("console");
   const inputSpan = document.querySelector("#input span");
   const logsDiv = document.querySelector("#logs");
+
   let charset = rs.ExternCharset.Alpha;
+  let moveDelay = 10;
+  let timeout;
 
   writeLine(getHelpText());
 
@@ -59,16 +62,12 @@ import('./pkg/index.js').then(rs => {
     else if (cmd === "clear")
       logsDiv.innerHTML = "";
     else if (cmd === "solve") {
-      cube.reset_moves();
       cube.solve();
       updateCubePre();
-      writeLine(cube.get_moves());
-      cube.reset_moves();
     }
     else if (cmd === "scramble") {
-      cube.scramble(+args[0] || 1000);
+      cube.scramble(+args[0] || 100);
       updateCubePre();
-      cube.reset_moves();
     }
     else if (cmd === "reset") {
       cube.reset_state();
@@ -105,8 +104,12 @@ import('./pkg/index.js').then(rs => {
             charset = rs.ExternCharset.ZeroModNine;
             break;
           default:
-            writeLine(`Invalid value "${value}" for configuration key "alpha".`)
+            writeLine(`Invalid value "${value}" for configuration key "charset".`)
         }
+        updateCubePre();
+        break;
+      case "move_delay":
+        moveDelay = +value || 0;
         updateCubePre();
         break;
       default:
@@ -121,6 +124,14 @@ import('./pkg/index.js').then(rs => {
   }
 
   function updateCubePre() {
+    clearTimeout(timeout)
+    if (moveDelay) {
+      if (cube.flush_move()) {
+        timeout = setTimeout(updateCubePre, moveDelay)
+      }
+    } else {
+      cube.flush_all_moves();
+    }
     cubePre.innerText = cube.to_string(charset);
   }
 
@@ -131,7 +142,7 @@ cubular v1.0.0
 Available commands:
   help               Print this message.
   solve              Solve the puzzle.
-  scramble [count]   Scramble the puzzle with [count=1000] random moves.
+  scramble [count]   Scramble the puzzle with [count=100] random moves.
   123X1              Apply a move to the puzzle.
   clear              Clear the console.
   reset              Reset the cube.
@@ -147,6 +158,8 @@ Configuration:
       )} (alpha | zero_mod_nine | one_mod_nine)
     What characters to use to display the cube. Defaults to "alpha".
     "one_mod_nine" is what's used in the challenge description.
+  move_delay: ${moveDelay} (number)
+    The time in milliseconds to wait between each move. Defaults to 10.
 `.trimEnd()
   }
 })

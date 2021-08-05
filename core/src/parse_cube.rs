@@ -4,7 +4,7 @@ use regex::Regex;
 
 use crate::*;
 
-pub fn parse_cube(cube: &mut RootCube, str: &str) -> Result<(), String> {
+pub fn parse_cube(cube: &mut [[[Value; 9]; 9]; 9], str: &str) -> Result<(), String> {
   let str = str.to_lowercase();
   let str = str.trim();
   let charset = if str.contains('a') {
@@ -48,20 +48,18 @@ pub fn parse_cube(cube: &mut RootCube, str: &str) -> Result<(), String> {
               return Err(format!("Invalid parity at position {:?}", (x, y, z2)));
             }
           };
-          cube.values[x][y][z2].0 = value;
+          cube[x][y][z2].0 = value;
         }
         z2 += 1;
       }
     }
     z = z2;
   }
-  if cube
-    .values
-    .iter()
+  if <[_]>::iter(cube)
     .flatten()
     .flatten()
     .collect::<HashBag<_>>()
-    != SOLVED.iter().flatten().flatten().collect()
+    != <[_]>::iter(&*SOLVED).flatten().flatten().collect()
   {
     return Err(format!("Invalid piece counts"));
   }
