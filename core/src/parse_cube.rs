@@ -37,11 +37,11 @@ pub fn parse_cube(cube: &mut [[[Value; 9]; 9]; 9], str: &str) -> Result<(), Stri
             return Err(format!("Invalid cube size {:?}", (x, y, z2)));
           }
           let mut value = if let Some(index) = charset.find(char) {
-            index
+            index as u8
           } else {
             return Err(format!("Invalid character {:?}", char));
           };
-          if value % 2 != (x + y + z2) % 2 {
+          if value % 2 != ((x + y + z2) % 2) as u8 {
             if charset.len() == 9 {
               value += 9
             } else {

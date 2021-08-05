@@ -31,7 +31,7 @@ impl<T: Cube + ?Sized> Cube for &mut T {
 lazy_static! {
 pub static ref SOLVED: [[[Value; 9]; 9]; 9] = {
   #[inline(never)] // Prevent huge compiled sizes
-  fn x9<F: Fn((usize, I)) -> T, I: Copy, T>(cb: F) -> impl Fn(I) -> [T; 9] {
+  fn x9<F: Fn((u8, I)) -> T, I: Copy, T>(cb: F) -> impl Fn(I) -> [T; 9] {
     move |i| {
     [
     cb((0, i)),

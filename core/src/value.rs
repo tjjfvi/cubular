@@ -4,11 +4,11 @@ use std::{
 };
 
 #[derive(PartialEq, Eq, Hash, Copy, Clone, Default)]
-pub struct Value(pub usize);
+pub struct Value(pub u8);
 
-impl From<usize> for Value {
+impl From<u8> for Value {
   #[inline]
-  fn from(x: usize) -> Self {
+  fn from(x: u8) -> Self {
     Value(x % 18)
   }
 }
@@ -52,14 +52,14 @@ impl Value {
       ValueCharset::Alpha => CHARSET_ALPHA,
       ValueCharset::ZeroModNine => CHARSET_ZERO_MOD_NINE,
       ValueCharset::OneModNine => CHARSET_ONE_MOD_NINE,
-    })[self.0]
+    })[self.0 as usize]
   }
 }
 
 impl Debug for Value {
   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> fmt::Result {
     f.write_str("N(")?;
-    f.write_char(CHARSET_ALPHA[self.0])?;
+    f.write_char(CHARSET_ALPHA[self.0 as usize])?;
     f.write_str(")")?;
     Ok(())
   }

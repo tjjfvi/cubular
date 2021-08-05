@@ -1,5 +1,5 @@
 use cubular_core::*;
-use std::collections::VecDeque;
+use std::{collections::VecDeque, intrinsics::transmute};
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -7,13 +7,6 @@ pub struct ExternCube {
   current_state: [[[Value; 9]; 9]; 9],
   queued_state: [[[Value; 9]; 9]; 9],
   queued_moves: VecDeque<Move>,
-}
-
-#[wasm_bindgen]
-pub enum ExternCharset {
-  Alpha,
-  ZeroModNine,
-  OneModNine,
 }
 
 #[wasm_bindgen]
@@ -30,6 +23,10 @@ impl ExternCube {
     self.current_state = *SOLVED;
     self.queued_state = *SOLVED;
     self.queued_moves.clear();
+  }
+
+  pub fn get_state(&self) -> Box<[u8]> {
+    Box::new(unsafe { transmute::<_, [u8; 729]>(self.current_state) })
   }
 
   pub fn set(&mut self, str: &str) -> Result<(), JsValue> {
@@ -59,18 +56,6 @@ impl ExternCube {
 
   pub fn scramble(&mut self, iterations: u32) {
     <_ as Scramble>::scramble(self, iterations);
-  }
-
-  pub fn to_string(&self, charset: ExternCharset) -> String {
-    DisplayCube(
-      &self.current_state,
-      match charset {
-        ExternCharset::Alpha => ValueCharset::Alpha,
-        ExternCharset::OneModNine => ValueCharset::OneModNine,
-        ExternCharset::ZeroModNine => ValueCharset::ZeroModNine,
-      },
-    )
-    .to_string()
   }
 
   pub fn apply_moves(&mut self, moves_str: String) -> Result<(), JsValue> {

@@ -6,13 +6,21 @@ import('./pkg/index.js').then(rs => {
   const inputSpan = document.querySelector("#input span");
   const logsDiv = document.querySelector("#logs");
 
-  let charset = rs.ExternCharset.Alpha;
+  const charsets = {
+    alpha: "0a1b2c3d4e5f6g7h8i",
+    zero_mod_nine: "012345678012345678",
+    one_mod_nine: "123456789123456789",
+  };
+
+  let cubeCells;
+  let charset = "alpha";
   let moveDelay = 10;
   let timeout;
 
   writeLine(getHelpText());
 
-  updateCubePre();
+  resetCubePre();
+  updateCubeCells();
 
   document.querySelector("[contenteditable]").addEventListener("paste", function (e) {
     e.preventDefault();
@@ -43,11 +51,12 @@ import('./pkg/index.js').then(rs => {
   cubePre.addEventListener("blur", () => {
     writeLine("\n> [edited cube configuration]");
     try {
-      cube.set(cubePre.innerHTML.replace(/<br>/g, "\n"))
-      updateCubePre();
+      cube.set(cubePre.innerText)
     } catch (e) {
       writeLine(e);
     }
+    resetCubePre();
+    updateCubeCells();
   })
 
   function processCommand(str) {
@@ -63,20 +72,20 @@ import('./pkg/index.js').then(rs => {
       logsDiv.innerHTML = "";
     else if (cmd === "solve") {
       cube.solve();
-      updateCubePre();
+      updateCubeCells();
     }
     else if (cmd === "scramble") {
       cube.scramble(+args[0] || 100);
-      updateCubePre();
+      updateCubeCells();
     }
     else if (cmd === "reset") {
       cube.reset_state();
-      updateCubePre();
+      updateCubeCells();
     }
     else if (/\d\d\d[xyz]\d/.test(cmd)) {
       try {
         cube.apply_moves(cmd.toUpperCase())
-        updateCubePre();
+        updateCubeCells();
       } catch (e) {
         writeLine(e);
       }
@@ -93,24 +102,14 @@ import('./pkg/index.js').then(rs => {
   function setConfig(key, value) {
     switch (key) {
       case "charset":
-        switch (value) {
-          case "alpha":
-            charset = rs.ExternCharset.Alpha;
-            break;
-          case "one_mod_nine":
-            charset = rs.ExternCharset.OneModNine;
-            break;
-          case "zero_mod_nine":
-            charset = rs.ExternCharset.ZeroModNine;
-            break;
-          default:
-            writeLine(`Invalid value "${value}" for configuration key "charset".`)
-        }
-        updateCubePre();
+        if (!Object.keys(charsets).includes(value))
+          return writeLine(`Invalid value "${value}" for configuration key "charset".`)
+        charset = value
+        updateCubeCells();
         break;
       case "move_delay":
         moveDelay = +value || 0;
-        updateCubePre();
+        updateCubeCells();
         break;
       default:
         writeLine(`Unknown configuration key "${key}".`)
@@ -123,16 +122,56 @@ import('./pkg/index.js').then(rs => {
     logsDiv.appendChild(span);
   }
 
-  function updateCubePre() {
+  function updateCubeCells() {
     clearTimeout(timeout)
     if (moveDelay) {
       if (cube.flush_move()) {
-        timeout = setTimeout(updateCubePre, moveDelay)
+        timeout = setTimeout(updateCubeCells, moveDelay)
       }
     } else {
       cube.flush_all_moves();
     }
-    cubePre.innerText = cube.to_string(charset);
+
+    let data = cube.get_state();
+    cubeCells.forEach((a, x) => {
+      a.forEach((a, y) => {
+        a.forEach(
+          /** @param cell {HTMLElement} */
+          (cell, z) => {
+            let value = data[x * 81 + y * 9 + z];
+            let solvedValue = (x + y + z) % 18;
+            cell.innerText = charsets[charset][value];
+            cell.style.color = value === solvedValue ? "green" : "inherit"
+          })
+      })
+    })
+  }
+
+  function resetCubePre() {
+    cubeCells = Array.from({ length: 9 }, () => Array.from({ length: 9 }, () => Array(9)));
+    cubePre.innerHTML = "";
+    for (let i of [0, 3, 6]) {
+      if (i !== 0) cubePre.appendChild(text("\n\n"))
+      for (let y of [0, 1, 2, 3, 4, 5, 6, 7, 8]) {
+        if (y !== 0) cubePre.appendChild(text("\n"))
+        for (let z of [i, i + 1, i + 2]) {
+          if (z !== i) cubePre.appendChild(text("  "))
+          for (let x of [0, 1, 2, 3, 4, 5, 6, 7, 8]) {
+            if (x !== 0) cubePre.appendChild(text(" "))
+            let cell = text(".")
+            console.log(i, z);
+            cubeCells[x][y][z] = cell;
+            cubePre.appendChild(cell);
+          }
+        }
+      }
+    }
+    console.log(cubeCells);
+    function text(str) {
+      let el = document.createElement("span");
+      el.innerText = str;
+      return el;
+    }
   }
 
   function getHelpText() {
@@ -149,13 +188,7 @@ Available commands:
   set [key] [value]  Change a configuration value.
 
 Configuration:
-  charset: ${(
-        charset === rs.ExternCharset.Alpha
-          ? "alpha"
-          : charset === rs.ExternCharset.OneModNine
-            ? "one_mod_nine"
-            : "zero_mod_nine"
-      )} (alpha | zero_mod_nine | one_mod_nine)
+  charset: ${charset} (${Object.keys(charsets).join(" | ")})
     What characters to use to display the cube. Defaults to "alpha".
     "one_mod_nine" is what's used in the challenge description.
   move_delay: ${moveDelay} (number)
