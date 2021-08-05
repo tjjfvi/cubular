@@ -6,22 +6,33 @@ import('./pkg/index.js').then(rs => {
   const inputSpan = document.querySelector("#input span");
   const logsDiv = document.querySelector("#logs");
 
+  let cubeCells;
+  resetCubePre();
+
   const charsets = {
     alpha: "0a1b2c3d4e5f6g7h8i",
     zero_mod_nine: "012345678012345678",
     one_mod_nine: "123456789123456789",
   };
 
-  let cubeCells;
+  const demoScrambleDelay = 2;
+  const demoSolveDelay = 5;
+
   let charset = "alpha";
   let moveDelay = 5;
-  let lastTick = null;
+
   let timeout;
+  let lastTick = null;
+  let deltaTime = 0;
+
+  let demoPhase = null;
+
+  inputSpan.focus();
+  inputSpan.textContent = "demo";
 
   writeLine(getHelpText());
 
-  resetCubePre();
-  updateCubeCells();
+  tick();
 
   document.querySelector("[contenteditable]").addEventListener("paste", function (e) {
     e.preventDefault();
@@ -57,47 +68,41 @@ import('./pkg/index.js').then(rs => {
       writeLine(e);
     }
     resetCubePre();
-    updateCubeCells();
+    paint();
   })
 
   function processCommand(str) {
     writeLine("\n> " + str);
     str = str.trim().toLowerCase();
-    let m;
+    let match;
     const [cmd, ...args] = str.split(" ");
     if (cmd === "?" || cmd === "h" || cmd === "help")
       writeLine(getHelpText());
-    else if (str === "[edited cube configuration]") {
+    else if (str === "[edited cube configuration]")
       writeLine("Lies.")
-    }
     else if (cmd === "clear")
       logsDiv.innerHTML = "";
-    else if (cmd === "solve") {
+    else if (cmd === "solve")
       cube.solve();
-      updateCubeCells();
-    }
-    else if (cmd === "scramble") {
+    else if (cmd === "scramble")
       cube.scramble(+args[0] || 1000);
-      updateCubeCells();
-    }
-    else if (cmd === "reset") {
+    else if (cmd === "reset")
       cube.reset();
-      updateCubeCells();
-    } else if (cmd === "skip") {
+    else if (cmd === "skip")
       cube.flush_all_moves();
-      updateCubeCells();
+    else if (cmd === "demo") {
+      demoPhase = "scramble";
+      cube.scramble(1000);
+      writeLine("Scrambling with 1000 random moves.");
     }
-    else if (/\d\d\d[xyz]\d/.test(cmd)) {
+    else if (/\d\d\d[xyz]\d/.test(cmd))
       try {
         cube.apply_moves(cmd.toUpperCase())
-        updateCubeCells();
       } catch (e) {
         writeLine(e);
       }
-    }
-    else if (m = /^(\w+)\s*=\s*(.+)$/.exec(str)) {
-      setConfig(m[1], m[2])
-    }
+    else if (match = /^(\w+)\s*=\s*(.+)$/.exec(str))
+      setConfig(match[1], match[2])
     else if (cmd) {
       writeLine(`Unknown command "${str}".\nType "help" for a list of available commands.`)
       console.log(str);
@@ -110,12 +115,11 @@ import('./pkg/index.js').then(rs => {
         if (!Object.keys(charsets).includes(value))
           return writeLine(`Invalid value "${value}" for configuration key "charset".`)
         charset = value
-        updateCubeCells();
         break;
-      case "move_delay":
+      case "delay":
         moveDelay = +value || 0;
-        lastTick = null;
-        updateCubeCells();
+        clearTimeout(timeout);
+        tick();
         break;
       default:
         writeLine(`Unknown configuration key "${key}".`)
@@ -128,43 +132,64 @@ import('./pkg/index.js').then(rs => {
     logsDiv.appendChild(span);
   }
 
-  function updateCubeCells() {
-    clearTimeout(timeout)
-    if (moveDelay) {
-      const count = lastTick ? Math.round((Date.now() - lastTick) / moveDelay) : 1;
-      if (cube.flush_moves(count)) {
-        timeout = setTimeout(updateCubeCells, moveDelay)
-        lastTick = Date.now();
-      } else {
-        lastTick = null;
+  function tick() {
+    deltaTime = Date.now() - lastTick;
+    lastTick = Date.now();
+    if (demoPhase === "scramble") {
+      let done = !cube.flush_moves(deltaTime / demoScrambleDelay);
+      paint();
+      if (done) {
+        demoPhase = "solve";
+        writeLine("Scrambled.");
+        let moveCount = cube.solve();
+        writeLine(`Found ${moveCount} move solution.`);
+        timeout = setTimeout(() => {
+          writeLine("Displaying solution...");
+          tick()
+        }, 2000);
       }
+      else
+        timeout = setTimeout(tick, demoScrambleDelay);
+    } else if (demoPhase === "solve") {
+      let done = !cube.flush_moves(deltaTime / demoSolveDelay);
+      paint();
+      if (done) {
+        demoPhase = null;
+        writeLine("Done.");
+        timeout = setTimeout(tick, moveDelay);
+      } else
+        timeout = setTimeout(tick, demoSolveDelay);
     } else {
-      lastTick = null
-      cube.flush_all_moves();
+      if (moveDelay)
+        cube.flush_moves(deltaTime / moveDelay);
+      else
+        cube.flush_all_moves()
+      paint();
+      timeout = setTimeout(tick, moveDelay);
     }
+  }
 
+  function paint() {
     let data = cube.get_state();
-    cubeCells.forEach((a, x) => {
-      a.forEach((a, y) => {
-        a.forEach(
-          /** @param cell {HTMLElement} */
-          (cell, z) => {
-            let value = data[x * 81 + y * 9 + z];
-            let solvedValue = (x + y + z) % 18;
-            cell.innerText = charsets[charset][value];
-            cell.style.color = [
-              "#d63031",
-              "#e67e22",
-              "#f39c12",
-              "#f1c40f",
-              "#2ecc71",
-              "#27ae60",
-              "#3498db",
-              "#2980b9",
-              "#8e44ad",
-            ][charset === "alpha" ? Math.floor(value / 2) : value % 9]
-            cell.style.opacity = value === solvedValue ? "1" : ".6";
-          })
+    cubeCells.forEach((grid, x) => {
+      grid.forEach((row, y) => {
+        row.forEach((cell, z) => {
+          let value = data[x * 81 + y * 9 + z];
+          let solvedValue = (x + y + z) % 18;
+          cell.innerText = charsets[charset][value];
+          cell.style.color = [
+            "#d63031",
+            "#e67e22",
+            "#f39c12",
+            "#f1c40f",
+            "#2ecc71",
+            "#27ae60",
+            "#3498db",
+            "#2980b9",
+            "#8e44ad",
+          ][charset === "alpha" ? Math.floor(value / 2) : value % 9]
+          cell.style.opacity = value === solvedValue ? "1" : ".6";
+        })
       })
     })
   }
@@ -173,21 +198,21 @@ import('./pkg/index.js').then(rs => {
     cubeCells = Array.from({ length: 9 }, () => Array.from({ length: 9 }, () => Array(9)));
     cubePre.innerHTML = "";
     for (let i of [0, 3, 6]) {
-      if (i !== 0) cubePre.appendChild(text("\n\n"))
+      if (i !== 0) cubePre.appendChild(span("\n\n"))
       for (let y of [0, 1, 2, 3, 4, 5, 6, 7, 8]) {
-        if (y !== 0) cubePre.appendChild(text("\n"))
+        if (y !== 0) cubePre.appendChild(span("\n"))
         for (let z of [i, i + 1, i + 2]) {
-          if (z !== i) cubePre.appendChild(text("  "))
+          if (z !== i) cubePre.appendChild(span("  "))
           for (let x of [0, 1, 2, 3, 4, 5, 6, 7, 8]) {
-            if (x !== 0) cubePre.appendChild(text(" "))
-            let cell = text(".")
+            if (x !== 0) cubePre.appendChild(span(" "))
+            let cell = span(".")
             cubeCells[x][y][z] = cell;
             cubePre.appendChild(cell);
           }
         }
       }
     }
-    function text(str) {
+    function span(str) {
       let el = document.createElement("span");
       el.innerText = str;
       return el;
@@ -200,19 +225,20 @@ cubular v1.0.0
 
 Available commands:
   help               Print this message.
-  solve              Solve the puzzle.
+  demo               Scramble and solve the cube.
   scramble [count]   Scramble the puzzle with [count=1000] random moves.
-  123X1              Apply a move to the puzzle.
-  clear              Clear the console.
+  solve              Solve the puzzle.
   reset              Reset the cube.
+  123X1              Apply a move to the puzzle.
   skip               Immediately finish all moves.
+  clear              Clear the console.
   [key] = [value]    Change a configuration value.
 
 Configuration:
   charset: ${charset} (${Object.keys(charsets).join(" | ")})
     What characters to use to display the cube. Defaults to "alpha".
     "one_mod_nine" is what's used in the challenge description.
-  move_delay: ${moveDelay} (number)
+  delay: ${moveDelay} (number)
     The time in milliseconds to wait between each move. Defaults to 5.
 `.trimEnd()
   }

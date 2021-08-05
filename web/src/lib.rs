@@ -1,5 +1,5 @@
 use cubular_core::*;
-use std::{collections::VecDeque, intrinsics::transmute};
+use std::{collections::VecDeque, intrinsics::transmute, time::Instant};
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -52,8 +52,9 @@ impl ExternCube {
     self.queued_moves.clear();
   }
 
-  pub fn solve(&mut self) {
+  pub fn solve(&mut self) -> usize {
     <_ as Solve>::solve(self);
+    self.queued_moves.len()
   }
 
   pub fn scramble(&mut self, iterations: u32) {
