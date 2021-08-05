@@ -27,6 +27,9 @@ import('./pkg/index.js').then(rs => {
 
   let demoPhase = null;
 
+  let history = [""];
+  let historyPos = 0;
+
   inputSpan.textContent = "demo";
   focusInputSpan();
   writeLine(getHelpText());
@@ -57,6 +60,15 @@ import('./pkg/index.js').then(rs => {
       e.preventDefault();
       processCommand(inputSpan.textContent);
       inputSpan.textContent = "";
+    } else if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+      e.preventDefault();
+      if (historyPos === history.length - 1)
+        history[historyPos] = inputSpan.textContent;
+      historyPos += e.key === "ArrowDown" ? 1 : -1;
+      if (historyPos < 0) historyPos = 0;
+      if (historyPos > history.length - 1) historyPos = history.length - 1;
+      inputSpan.textContent = history[historyPos];
+      focusInputSpan();
     }
   })
 
@@ -74,6 +86,10 @@ import('./pkg/index.js').then(rs => {
   function processCommand(str) {
     writeLine("\n> " + str);
     str = str.trim().toLowerCase();
+    if (!str) return;
+    history[history.length - 1] = str;
+    history.push("");
+    historyPos = history.length - 1;
     let match;
     const [cmd, ...args] = str.split(" ");
     if (cmd === "?" || cmd === "h" || cmd === "help")
@@ -109,10 +125,8 @@ import('./pkg/index.js').then(rs => {
       }
     else if (match = /^(\w+)\s*=\s*(.+)$/.exec(str))
       setConfig(match[1], match[2])
-    else if (cmd) {
+    else if (cmd)
       writeLine(`Unknown command "${str}".\nType "help" for a list of available commands.`)
-      console.log(str);
-    }
   }
 
   function setConfig(key, value) {
