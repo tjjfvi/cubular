@@ -15,7 +15,7 @@ import('./pkg/index.js').then(rs => {
   let cubeCells;
   let charset = "alpha";
   let colors = "solved";
-  let moveDelay = 10;
+  let moveDelay = 5;
   let lastTick = null;
   let timeout;
 
@@ -64,6 +64,7 @@ import('./pkg/index.js').then(rs => {
   function processCommand(str) {
     writeLine("\n> " + str);
     str = str.trim().toLowerCase();
+    let m;
     const [cmd, ...args] = str.split(" ");
     if (cmd === "?" || cmd === "h" || cmd === "help")
       writeLine(getHelpText());
@@ -95,8 +96,8 @@ import('./pkg/index.js').then(rs => {
         writeLine(e);
       }
     }
-    else if (cmd === "set") {
-      setConfig(args[0], args[1])
+    else if (m = /^(\w+)\s*=\s*(.+)$/.exec(str)) {
+      setConfig(m[1], m[2])
     }
     else if (cmd) {
       writeLine(`Unknown command "${str}".\nType "help" for a list of available commands.`)
@@ -215,14 +216,14 @@ Available commands:
   clear              Clear the console.
   reset              Reset the cube.
   skip               Immediately finish all moves.
-  set [key] [value]  Change a configuration value.
+  [key] = [value]    Change a configuration value.
 
 Configuration:
   charset: ${charset} (${Object.keys(charsets).join(" | ")})
     What characters to use to display the cube. Defaults to "alpha".
     "one_mod_nine" is what's used in the challenge description.
   move_delay: ${moveDelay} (number)
-    The time in milliseconds to wait between each move. Defaults to 10.
+    The time in milliseconds to wait between each move. Defaults to 5.
   colors: ${colors} (none | solved | value)
     How to color the pieces. Defaults to "solved".
     "none" gives no coloration.
