@@ -21,7 +21,11 @@ impl ExternCube {
 
   pub fn reset(&mut self) {
     self.current_state = *SOLVED;
-    self.queued_state = *SOLVED;
+    self.cancel_queued_moves();
+  }
+
+  pub fn cancel_queued_moves(&mut self) {
+    self.queued_state = self.current_state;
     self.queued_moves.clear();
   }
 

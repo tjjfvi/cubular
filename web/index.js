@@ -88,6 +88,8 @@ import('./pkg/index.js').then(rs => {
       cube.reset();
     else if (cmd === "skip")
       cube.flush_all_moves();
+    else if (cmd === "stop")
+      cube.cancel_queued_moves();
     else if (cmd === "demo") {
       demoPhase = "scramble";
       cube.scramble(1000);
@@ -236,6 +238,7 @@ Available commands:
   reset              Reset the cube.
   123X1              Apply a move to the puzzle.
   skip               Immediately finish all moves.
+  stop               Cancel all queued moves.
   clear              Clear the console.
   [key] = [value]    Change a configuration value.
 
