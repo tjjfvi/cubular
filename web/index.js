@@ -78,7 +78,7 @@ import('./pkg/index.js').then(rs => {
       updateCubeCells();
     }
     else if (cmd === "scramble") {
-      cube.scramble(+args[0] || 100);
+      cube.scramble(+args[0] || 1000);
       updateCubeCells();
     }
     else if (cmd === "reset") {
@@ -211,7 +211,7 @@ cubular v1.0.0
 Available commands:
   help               Print this message.
   solve              Solve the puzzle.
-  scramble [count]   Scramble the puzzle with [count=100] random moves.
+  scramble [count]   Scramble the puzzle with [count=1000] random moves.
   123X1              Apply a move to the puzzle.
   clear              Clear the console.
   reset              Reset the cube.
