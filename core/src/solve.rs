@@ -19,16 +19,18 @@ pub(self) use swap::*;
 
 pub trait Solve: Cube + Sized {
   fn solve(&mut self) {
-    for i in 0..=1 {
-      self._solve_face(Axis::X, Pos(i, i, i));
-      self._solve_face(Axis::Y, Pos(i + 1, i, i));
-      self._solve_face(Axis::Z, Pos(i + 1, i + 1, i));
-    }
-    for i in 0..=1 {
-      self._solve_face_flipped(Axis::X, Pos(i, i, i));
-      self._solve_face_flipped(Axis::Y, Pos(i + 1, i, i));
-      self._solve_face_flipped(Axis::Z, Pos(i + 1, i + 1, i));
-    }
+    self._solve_face(Axis::Z, Pos(0, 0, 0), Pos(9, 9, 9));
+    self._solve_face(Axis::Z, Pos(0, 0, 1), Pos(9, 9, 9));
+    self._solve_face_flipped(Axis::Z, Pos(0, 0, 2), Pos(9, 9, 9));
+    self._solve_face_flipped(Axis::Z, Pos(0, 0, 2), Pos(9, 9, 8));
+    self._solve_face(Axis::Y, Pos(0, 0, 2), Pos(9, 9, 7));
+    self._solve_face(Axis::Y, Pos(0, 1, 2), Pos(9, 9, 7));
+    self._solve_face_flipped(Axis::Y, Pos(0, 2, 2), Pos(9, 9, 7));
+    self._solve_face_flipped(Axis::Y, Pos(0, 2, 2), Pos(9, 8, 7));
+    self._solve_face(Axis::X, Pos(0, 2, 2), Pos(9, 7, 7));
+    self._solve_face(Axis::X, Pos(1, 2, 2), Pos(9, 7, 7));
+    self._solve_face_flipped(Axis::X, Pos(2, 2, 2), Pos(9, 7, 7));
+    self._solve_face_flipped(Axis::X, Pos(2, 2, 2), Pos(8, 7, 7));
     self
       .slice(Pos(2, 2, 2), Pos(5, 5, 5))
       .apply_solve_step(SolveOuterShell);
@@ -39,15 +41,15 @@ pub trait Solve: Cube + Sized {
 }
 
 trait _Solve: Cube {
-  fn _solve_face(&mut self, axis: Axis, offset: Pos) {
+  fn _solve_face(&mut self, axis: Axis, min: Pos, max: Pos) {
     self
-      .slice(offset, self.size() - offset)
+      .slice(min, max - min)
       .swap_axes(Axis::Z, axis)
       .apply_solve_step(SolveFrontFace);
   }
-  fn _solve_face_flipped(&mut self, axis: Axis, offset: Pos) {
+  fn _solve_face_flipped(&mut self, axis: Axis, min: Pos, max: Pos) {
     self
-      .slice(Pos(2, 2, 2), self.size() - Pos(2, 2, 2) - offset)
+      .slice(min, max - min)
       .swap_axes(Axis::Z, axis)
       .flip(Axis::Z)
       .apply_solve_step(SolveFrontFace);
