@@ -34,15 +34,18 @@ import('./pkg/index.js').then(rs => {
 
   tick();
 
-  document.querySelector("[contenteditable]").addEventListener("paste", function (e) {
+  cubePre.addEventListener("paste", e => {
     e.preventDefault();
-    var text = "";
-    if (e.clipboardData && e.clipboardData.getData) {
-      text = e.clipboardData.getData("text/plain");
-    } else if (window.clipboardData && window.clipboardData.getData) {
-      text = window.clipboardData.getData("Text");
-    }
+    let text = e.clipboardData.getData("text/plain");
+    document.execCommand("insertHTML", false, text);
 
+    if (cubePre.innerText === text)
+      inputSpan.focus();
+  });
+
+  inputSpan.addEventListener("paste", e => {
+    e.preventDefault();
+    let text = e.clipboardData.getData("text/plain");
     document.execCommand("insertHTML", false, text);
   });
 
@@ -55,20 +58,18 @@ import('./pkg/index.js').then(rs => {
       e.preventDefault();
       processCommand(inputSpan.textContent);
       inputSpan.textContent = "";
-      inputSpan.blur()
-      inputSpan.focus()
     }
   })
 
   cubePre.addEventListener("blur", () => {
-    writeLine("\n> [edited cube configuration]");
+    cubePre.attributes.contenteditable.value = false;
     try {
       cube.set(cubePre.innerText)
     } catch (e) {
       writeLine(e);
     }
     resetCubePre();
-    paint();
+    tick();
   })
 
   function processCommand(str) {
@@ -78,8 +79,6 @@ import('./pkg/index.js').then(rs => {
     const [cmd, ...args] = str.split(" ");
     if (cmd === "?" || cmd === "h" || cmd === "help")
       writeLine(getHelpText());
-    else if (str === "[edited cube configuration]")
-      writeLine("Lies.")
     else if (cmd === "clear")
       logsDiv.innerHTML = "";
     else if (cmd === "solve")
@@ -94,6 +93,12 @@ import('./pkg/index.js').then(rs => {
       demoPhase = "scramble";
       cube.scramble(1000);
       writeLine("Scrambling with 1000 random moves.");
+    }
+    else if (cmd === "edit") {
+      clearTimeout(timeout);
+      cubePre.attributes.contenteditable.value = true;
+      cubePre.innerText = cubePre.innerText;
+      cubePre.focus();
     }
     else if (/\d\d\d[xyz]\d/.test(cmd))
       try {
@@ -226,6 +231,7 @@ cubular v1.0.0
 Available commands:
   help               Print this message.
   demo               Scramble and solve the cube.
+  edit               Edit the cube configuration.
   scramble [count]   Scramble the puzzle with [count=1000] random moves.
   solve              Solve the puzzle.
   reset              Reset the cube.
