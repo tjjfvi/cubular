@@ -14,7 +14,9 @@ import('./pkg/index.js').then(rs => {
 
   let cubeCells;
   let charset = "alpha";
+  let colors = "solved";
   let moveDelay = 10;
+  let lastTick = null;
   let timeout;
 
   writeLine(getHelpText());
@@ -79,7 +81,10 @@ import('./pkg/index.js').then(rs => {
       updateCubeCells();
     }
     else if (cmd === "reset") {
-      cube.reset_state();
+      cube.reset();
+      updateCubeCells();
+    } else if (cmd === "skip") {
+      cube.flush_all_moves();
       updateCubeCells();
     }
     else if (/\d\d\d[xyz]\d/.test(cmd)) {
@@ -109,6 +114,13 @@ import('./pkg/index.js').then(rs => {
         break;
       case "move_delay":
         moveDelay = +value || 0;
+        lastTick = null;
+        updateCubeCells();
+        break;
+      case "colors":
+        if (!["none", "solved", "value"].includes(value))
+          return writeLine(`Invalid value "${value}" for configuration key "colors".`);
+        colors = value;
         updateCubeCells();
         break;
       default:
@@ -125,10 +137,15 @@ import('./pkg/index.js').then(rs => {
   function updateCubeCells() {
     clearTimeout(timeout)
     if (moveDelay) {
-      if (cube.flush_move()) {
+      const count = lastTick ? Math.round((Date.now() - lastTick) / moveDelay) : 1;
+      if (cube.flush_moves(count)) {
         timeout = setTimeout(updateCubeCells, moveDelay)
+        lastTick = Date.now();
+      } else {
+        lastTick = null;
       }
     } else {
+      lastTick = null
       cube.flush_all_moves();
     }
 
@@ -141,7 +158,21 @@ import('./pkg/index.js').then(rs => {
             let value = data[x * 81 + y * 9 + z];
             let solvedValue = (x + y + z) % 18;
             cell.innerText = charsets[charset][value];
-            cell.style.color = value === solvedValue ? "green" : "inherit"
+            cell.style.color = colors === "solved"
+              ? value === solvedValue ? "#27ae60" : "inherit"
+              : colors === "value"
+                ? [
+                  "#d63031",
+                  "#e67e22",
+                  "#f39c12",
+                  "#f1c40f",
+                  "#2ecc71",
+                  "#27ae60",
+                  "#3498db",
+                  "#2980b9",
+                  "#8e44ad",
+                ][charset === "alpha" ? Math.floor(value / 2) : value % 9]
+                : "inherit"
           })
       })
     })
@@ -159,14 +190,12 @@ import('./pkg/index.js').then(rs => {
           for (let x of [0, 1, 2, 3, 4, 5, 6, 7, 8]) {
             if (x !== 0) cubePre.appendChild(text(" "))
             let cell = text(".")
-            console.log(i, z);
             cubeCells[x][y][z] = cell;
             cubePre.appendChild(cell);
           }
         }
       }
     }
-    console.log(cubeCells);
     function text(str) {
       let el = document.createElement("span");
       el.innerText = str;
@@ -185,6 +214,7 @@ Available commands:
   123X1              Apply a move to the puzzle.
   clear              Clear the console.
   reset              Reset the cube.
+  skip               Immediately finish all moves.
   set [key] [value]  Change a configuration value.
 
 Configuration:
@@ -193,6 +223,11 @@ Configuration:
     "one_mod_nine" is what's used in the challenge description.
   move_delay: ${moveDelay} (number)
     The time in milliseconds to wait between each move. Defaults to 10.
+  colors: ${colors} (none | solved | value)
+    How to color the pieces. Defaults to "solved".
+    "none" gives no coloration.
+    "solved" colors the solved pieces green.
+    "value" assigns a unique color to each value.
 `.trimEnd()
   }
 })

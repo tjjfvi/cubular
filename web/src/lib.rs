@@ -36,13 +36,15 @@ impl ExternCube {
     Ok(())
   }
 
-  pub fn flush_move(&mut self) -> bool {
-    if let Some(m) = self.queued_moves.pop_front() {
-      self.current_state.apply_move(m);
-      true
-    } else {
-      false
+  pub fn flush_moves(&mut self, count: u32) -> bool {
+    for _ in 0..count {
+      if let Some(m) = self.queued_moves.pop_front() {
+        self.current_state.apply_move(m);
+      } else {
+        return false;
+      }
     }
+    true
   }
 
   pub fn flush_all_moves(&mut self) {
