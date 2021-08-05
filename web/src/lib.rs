@@ -1,5 +1,5 @@
 use cubular_core::*;
-use std::{collections::VecDeque, intrinsics::transmute, time::Instant};
+use std::{collections::VecDeque, intrinsics::transmute};
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
