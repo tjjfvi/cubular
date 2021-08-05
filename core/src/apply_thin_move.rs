@@ -1,9 +1,13 @@
-use super::*;
+use crate::*;
 
 pub trait ApplyThinMove: Cube + Sized {
   fn apply_thin_move(&mut self, Move(center, axis, amount): Move) {
     let mut offcenter = center;
-    offcenter[axis] -= 1;
+    if center[axis] > 1 {
+      offcenter[axis] -= 1;
+    } else {
+      offcenter[axis] += 1;
+    }
     let offaxis = if axis == Axis::X { Axis::Y } else { Axis::X };
     self.apply_move(Move(offcenter, axis, amount));
     self.apply_move(Move(center, offaxis, 2));

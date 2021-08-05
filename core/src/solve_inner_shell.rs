@@ -1,4 +1,4 @@
-use super::*;
+use crate::*;
 use lazy_static::lazy_static;
 use tap::Tap;
 
@@ -12,9 +12,8 @@ lazy_static! {
   static ref INTO_CENTER_REVERSE: Vec<Move> = INTO_CENTER.clone().reverse_moves();
 }
 
-pub struct SolveOuterShell;
-
-impl SolveStep for SolveOuterShell {
+pub struct SolveInnerShell;
+impl SolveStep for SolveInnerShell {
   fn move_pool<C: Cube>(&self, cube: &mut C, from: Pos, to: Pos) {
     let center = Pos(2, 2, 2);
     if from.parity() != to.parity() {

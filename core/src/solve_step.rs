@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use super::*;
+use crate::*;
 
 pub trait SolveStep {
   fn get_swap<C: Cube>(&self, cube: &C, pos: Pos) -> Option<Swap>;
@@ -55,8 +55,9 @@ pub trait SolveStep {
 }
 
 pub trait ApplySolveStep: Cube + Sized {
-  fn apply_solve_step<S: SolveStep>(&mut self, solve_step: S) {
+  fn apply_solve_step<S: SolveStep>(&mut self, solve_step: S) -> &mut Self {
     solve_step.apply(self);
+    self
   }
 }
 
