@@ -8,12 +8,10 @@ pub fn get_move_str(Move(Pos(x, y, z), axis, amount): &Move) -> String {
     z,
     match axis {
       Axis::X => "X",
-      Axis::Y => "Z",
-      Axis::Z => "Y",
+      Axis::Y => "Y",
+      Axis::Z => "Z",
     },
-    (amount * if *axis == Axis::X { 1 } else { -1 })
-      .rem_euclid(4)
-      .to_string()
+    amount.rem_euclid(4).to_string()
   )
 }
 
@@ -45,8 +43,8 @@ pub fn parse_move_str(str: &str) -> Result<Move, String> {
   let center = Pos(parse_coord(0)?, parse_coord(1)?, parse_coord(2)?);
   let axis = match str.chars().nth(3) {
     Some('X') => Axis::X,
-    Some('Z') => Axis::Y,
-    Some('Y') => Axis::Z,
+    Some('Y') => Axis::Y,
+    Some('Z') => Axis::Z,
     _ => return Err(format!("Invalid axis: must be X, Y, or Z")),
   };
   let amount = str[4..=4]
