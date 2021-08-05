@@ -14,7 +14,6 @@ import('./pkg/index.js').then(rs => {
 
   let cubeCells;
   let charset = "alpha";
-  let colors = "solved";
   let moveDelay = 5;
   let lastTick = null;
   let timeout;
@@ -118,12 +117,6 @@ import('./pkg/index.js').then(rs => {
         lastTick = null;
         updateCubeCells();
         break;
-      case "colors":
-        if (!["none", "solved", "value"].includes(value))
-          return writeLine(`Invalid value "${value}" for configuration key "colors".`);
-        colors = value;
-        updateCubeCells();
-        break;
       default:
         writeLine(`Unknown configuration key "${key}".`)
     }
@@ -159,21 +152,18 @@ import('./pkg/index.js').then(rs => {
             let value = data[x * 81 + y * 9 + z];
             let solvedValue = (x + y + z) % 18;
             cell.innerText = charsets[charset][value];
-            cell.style.color = colors === "solved"
-              ? value === solvedValue ? "#27ae60" : "inherit"
-              : colors === "value"
-                ? [
-                  "#d63031",
-                  "#e67e22",
-                  "#f39c12",
-                  "#f1c40f",
-                  "#2ecc71",
-                  "#27ae60",
-                  "#3498db",
-                  "#2980b9",
-                  "#8e44ad",
-                ][charset === "alpha" ? Math.floor(value / 2) : value % 9]
-                : "inherit"
+            cell.style.color = [
+              "#d63031",
+              "#e67e22",
+              "#f39c12",
+              "#f1c40f",
+              "#2ecc71",
+              "#27ae60",
+              "#3498db",
+              "#2980b9",
+              "#8e44ad",
+            ][charset === "alpha" ? Math.floor(value / 2) : value % 9]
+            cell.style.opacity = value === solvedValue ? "1" : ".6";
           })
       })
     })
@@ -224,11 +214,6 @@ Configuration:
     "one_mod_nine" is what's used in the challenge description.
   move_delay: ${moveDelay} (number)
     The time in milliseconds to wait between each move. Defaults to 5.
-  colors: ${colors} (none | solved | value)
-    How to color the pieces. Defaults to "solved".
-    "none" gives no coloration.
-    "solved" colors the solved pieces green.
-    "value" assigns a unique color to each value.
 `.trimEnd()
   }
 })
