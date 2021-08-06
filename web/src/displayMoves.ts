@@ -3,13 +3,15 @@ import { inputSpan, writeLine } from "./console";
 import { cube, getCubeBuffer, paint } from "./cube";
 
 export default () => {
-  const match = /^#([0-8]{729})((?:-[1-7]{3}[XYZ]\d)*)/.exec(location.hash);
+  const match = /^#([0-8]{729})((?:-[1-7]{3}[XYZ]\d(?:@[0-8]{3})*)+-(?:@[0-8]{3})*)?$/.exec(location.hash);
   if (!match) return false
 
-  const [, pattern, movesStr] = match;
-  const moves = movesStr.split("-").filter(x => x);
+  const [, pattern, movesStr = ""] = match;
+  const moves = movesStr.split("-").slice(1, -1).map(x => x.slice(0, 5));
   const cubeBuffer = getCubeBuffer();
   const origState = Array(729);
+  let underlineCells = movesStr.split("-").slice(1).map(x => x.split("@").slice(1).map(x => parseInt(x, 9))).map(x => Array.from({ length: 729 }, (_, i) => x.includes(i)));
+  console.log(underlineCells)
   let affectedCells = Array.from({ length: 729 }, (_, i) => moves.some(m => inMove(m, i)));
 
   for (let x = 0; x < 9; x++) {
@@ -94,6 +96,7 @@ export default () => {
     cell.innerText = "0a1b2c3d4f5g6h7j8i"[value];
     cell.className = `
       c${value / 2 | 0}
+      ${underlineCells[moveIndex + (movePhase === 2 ? 1 : 0)][index] ? "underline" : ""}
       ${affectedCells[index]
         ? moveIndex === moves.length
           ? value === origState[index]

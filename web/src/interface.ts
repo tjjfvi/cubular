@@ -18,6 +18,7 @@ export default () => {
   let timeout: number;
   let lastTick = Date.now();
   let deltaTime = 0;
+  let paused = false;
 
   let demoPhase: null | "scramble" | "solve" = null;
 
@@ -90,6 +91,16 @@ export default () => {
       cube.flush_all_moves();
     else if (cmd === "stop")
       cube.cancel_queued_moves();
+    else if (cmd === "pause") {
+      paused = !paused;
+      if (!paused) tick();
+    }
+    else if (cmd === "next") {
+      cube.flush_moves(+args[0] || 1);
+      tick();
+    }
+    else if (cmd === "print")
+      writeLine(cube.print_moves(+args[0] || undefined))
     else if (cmd === "demo") {
       demoPhase = "scramble";
       cube.scramble(1000);
@@ -100,7 +111,7 @@ export default () => {
       let cubeBuffer = getCubeBuffer();
       for (const x of cubeBuffer)
         str += x % 9;
-      window.location.hash = `#${str}`;
+      window.open(`#${str}` + cube.print_moves(+args[0] || 0).split("\n").map((x, i) => (i ? "" : "-") + x + "-").join(""));
     }
     else if (cmd === "edit") {
       clearTimeout(timeout);
@@ -118,6 +129,7 @@ export default () => {
       setConfig(match[1], match[2])
     else if (cmd)
       writeLine(`Unknown command "${str}".\nType "help" for a list of available commands.`)
+    if (paused) tick();
   }
 
   function setConfig(key: string, value: string) {
@@ -169,12 +181,14 @@ export default () => {
       } else
         timeout = setTimeout(tick, demoSolveDelay);
     } else {
-      if (moveDelay)
-        cube.flush_moves(deltaTime / moveDelay);
-      else
-        cube.flush_all_moves()
+      if (!paused)
+        if (moveDelay)
+          cube.flush_moves(deltaTime / moveDelay);
+        else
+          cube.flush_all_moves()
       paint(paintCb);
-      timeout = setTimeout(tick, moveDelay);
+      if (!paused)
+        timeout = setTimeout(tick, moveDelay);
     }
   }
   function getHelpText() {
@@ -192,6 +206,9 @@ Available commands:
   skip               Immediately finish all moves.
   stop               Cancel all queued moves.
   clear              Clear the console.
+  pause              Pause/unpause running moves.
+  next [count]       Immediately run the next [count=1] move(s).
+  print [max]        Print queued moves.
   [key] = [value]    Change a configuration value.
 
 Configuration:

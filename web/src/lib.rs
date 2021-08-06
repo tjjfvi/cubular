@@ -74,6 +74,16 @@ impl ExternCube {
     <_ as Cube>::apply_moves(self, parse_moves_str(&moves_str)?.reverse_moves());
     Ok(())
   }
+
+  pub fn print_moves(&self, max: Option<usize>) -> String {
+    self
+      .queued_moves
+      .iter()
+      .take(max.unwrap_or(self.queued_moves.len()))
+      .map(get_move_str)
+      .collect::<Vec<_>>()
+      .join("\n")
+  }
 }
 
 impl Cube for ExternCube {
