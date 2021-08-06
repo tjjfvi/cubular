@@ -1,5 +1,5 @@
 use cubular_core::*;
-use std::{collections::VecDeque, intrinsics::transmute};
+use std::collections::VecDeque;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -19,6 +19,10 @@ impl ExternCube {
     }
   }
 
+  pub fn get_state_ptr(&mut self) -> usize {
+    &self.current_state as *const _ as usize
+  }
+
   pub fn reset(&mut self) {
     self.current_state = *SOLVED;
     self.cancel_queued_moves();
@@ -27,10 +31,6 @@ impl ExternCube {
   pub fn cancel_queued_moves(&mut self) {
     self.queued_state = self.current_state;
     self.queued_moves.clear();
-  }
-
-  pub fn get_state(&self) -> Box<[u8]> {
-    Box::new(unsafe { transmute::<_, [u8; 729]>(self.current_state) })
   }
 
   pub fn set(&mut self, str: &str) -> Result<(), JsValue> {
@@ -67,6 +67,11 @@ impl ExternCube {
 
   pub fn apply_moves(&mut self, moves_str: String) -> Result<(), JsValue> {
     <_ as Cube>::apply_moves(self, parse_moves_str(&moves_str)?);
+    Ok(())
+  }
+
+  pub fn unapply_moves(&mut self, moves_str: String) -> Result<(), JsValue> {
+    <_ as Cube>::apply_moves(self, parse_moves_str(&moves_str)?.reverse_moves());
     Ok(())
   }
 }

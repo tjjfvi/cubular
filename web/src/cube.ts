@@ -1,10 +1,12 @@
 
 import * as rs from "../pkg/index.js";
+import * as wasm from "../pkg/index_bg.wasm";
 
 export const cube = rs.ExternCube.new();
 export const cubePre = document.getElementById("cube")!.children[0] as HTMLPreElement;
 export let cubeCells: HTMLSpanElement[][][];
 
+cube.reset();
 resetCubePre();
 
 export function resetCubePre() {
@@ -32,27 +34,20 @@ export function resetCubePre() {
   }
 }
 
-export function paint(cb: (cell: HTMLSpanElement, value: number, solvedValue: number) => void) {
-  let data = cube.get_state();
+export function paint(cb: (cell: HTMLSpanElement, value: number, solvedValue: number, index: number) => void) {
+  const cubeBuffer = getCubeBuffer();
   cubeCells.forEach((grid, x) => {
     grid.forEach((row, y) => {
       row.forEach((cell, z) => {
-        let value = data[x * 81 + y * 9 + z];
+        let index = x * 81 + y * 9 + z;
+        let value = cubeBuffer[index];
         let solvedValue = (x + y + z) % 18;
-        cb(cell, value, solvedValue);
+        cb(cell, value, solvedValue, index);
       })
     })
   })
 }
 
-export const colors = [
-  "#d63031",
-  "#e67e22",
-  "#f39c12",
-  "#f1c40f",
-  "#2ecc71",
-  "#27ae60",
-  "#3498db",
-  "#2980b9",
-  "#8e44ad",
-];
+export function getCubeBuffer() {
+  return new Uint8Array(wasm.memory.buffer, cube.get_state_ptr(), 729)
+}
