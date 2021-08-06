@@ -4,22 +4,33 @@ const webpack = require('webpack');
 const WasmPackPlugin = require("@wasm-tool/wasm-pack-plugin");
 
 module.exports = {
-  entry: './index.js',
+  entry: './bootstrap.ts',
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'index.js',
   },
+  module: {
+    rules: [
+      {
+        test: /\.ts$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
+      },
+    ],
+  },
+  resolve: {
+    extensions: [".ts", ".js"]
+  },
+  experiments: {
+    asyncWebAssembly: true,
+  },
   plugins: [
-    new CopyWebpackPlugin(['index.html']),
+    new CopyWebpackPlugin({
+      patterns: ['index.html'],
+    }),
     new WasmPackPlugin({
       crateDirectory: path.resolve(__dirname, ".")
     }),
-    // Have this example work in Edge which doesn't ship `TextEncoder` or
-    // `TextDecoder` at this time.
-    new webpack.ProvidePlugin({
-      TextDecoder: ['text-encoding', 'TextDecoder'],
-      TextEncoder: ['text-encoding', 'TextEncoder']
-    })
   ],
   mode: 'development'
 };
