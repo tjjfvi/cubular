@@ -3,7 +3,9 @@ import * as rs from "../pkg/index.js";
 import * as wasm from "../pkg/index_bg.wasm";
 
 export const cube = rs.ExternCube.new();
-export const cubePre = document.getElementById("cube")!.children[0] as HTMLPreElement;
+export const title = document.getElementById("title")!;
+export const cubePre = document.querySelector<HTMLPreElement>("#cube pre")!
+export const caption = document.getElementById("caption")!;
 export let cubeCells: HTMLSpanElement[][][];
 
 cube.reset();

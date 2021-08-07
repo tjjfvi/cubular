@@ -31,6 +31,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      flex-direction: column;
     }
 
     #cube span.c0 {
@@ -89,6 +90,10 @@
       text-decoration: underline;
     }
 
+    #cube>span {
+      height: 15px;
+    }
+
     #cube textarea {
       font-family: "Inconsolata", monospace;
       font-size: inherit;
@@ -117,7 +122,9 @@
 
 <body>
   <div id="cube">
+    <span id="title"></span>
     <pre contenteditable="false"></pre>
+    <span id="caption"></span>
   </div>
   <div id="console">
     <div id="logs"></div>

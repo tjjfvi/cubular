@@ -107,11 +107,17 @@ export default () => {
       writeLine("Scrambling with 1000 random moves.");
     }
     else if (cmd === "link") {
-      let str = "";
+      let str = "#";
       let cubeBuffer = getCubeBuffer();
       for (const x of cubeBuffer)
         str += x % 9;
-      window.open(`#${str}` + cube.print_moves(+args[0] || 0).split("\n").map((x, i) => (i ? "" : "-") + x + "-").join(""));
+      str += cube
+        .print_moves(+args[0] || 0)
+        .split("\n")
+        .filter(x => x)
+        .map((x, i) => (i ? "" : "-") + x + "-")
+        .join("");
+      window.open(str);
     }
     else if (cmd === "edit") {
       clearTimeout(timeout);

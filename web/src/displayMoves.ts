@@ -1,18 +1,17 @@
 
-import { inputSpan, writeLine } from "./console";
-import { cube, getCubeBuffer, paint } from "./cube";
+import { consoleDiv, inputSpan, writeLine } from "./console";
+import { caption, cube, getCubeBuffer, paint, title } from "./cube";
 
 export default () => {
-  const match = /^#([0-8]{729})((?:-[1-7]{3}[XYZ]\d(?:@[0-8]{3})*)+-(?:@[0-8]{3})*)?$/.exec(location.hash);
+  const match = /^#(?:([a-zA-Z ]+):)?([0-8]{729})((?:-[1-7]{3}[XYZ]\d(?:@[0-8]{3})*)*-(?:@[0-8]{3})*)?$/.exec(location.hash);
   if (!match) return false
 
-  const [, pattern, movesStr = ""] = match;
+  const [, name, pattern, movesStr = ""] = match;
   const moves = movesStr.split("-").slice(1, -1).map(x => x.slice(0, 5));
   const cubeBuffer = getCubeBuffer();
   const origState = Array(729);
   let underlineCells = movesStr.split("-").slice(1).map(x => x.split("@").slice(1).map(x => parseInt(x, 9))).map(x => Array.from({ length: 729 }, (_, i) => x.includes(i)));
-  console.log(underlineCells)
-  let affectedCells = Array.from({ length: 729 }, (_, i) => moves.some(m => inMove(m, i)));
+  let affectedCells = Array.from({ length: 729 }, (_, i) => !moves.length || moves.some(m => inMove(m, i)));
 
   for (let x = 0; x < 9; x++) {
     for (let y = 0; y < 9; y++) {
@@ -25,20 +24,15 @@ export default () => {
     }
   }
 
+  title.innerText = name || ""
+
   cube.cancel_queued_moves();
 
-  if (!moves.length) {
-    return false
-  }
-
-  Object.assign(document.getElementById("input")!.style, {
-    position: "absolute",
-    left: "-10000vw",
-  })
+  document.getElementById("input")!.style.display = "none";
 
   writeLine("\nMoves: (use up/down arrows to step through)")
-  const moveSpans = moves.map(m => {
-    const line = writeLine(" - ")
+  const moveSpans = moves.map((m, i) => {
+    const line = writeLine(` ${(i + 1).toString().padStart(moves.length.toString().length)}. `)
     const span = document.createElement("span");
     span.textContent = m;
     line.appendChild(span);
@@ -50,40 +44,48 @@ export default () => {
 
   let moveIndex = 0;
 
-  let showSolved = false;
+  // 0: highlight parts that will be affected
+  // 1: show result after move
+  let movePhase = -1;
 
-  // 0: show everything
-  // 1: highlight parts that will be affected
-  // 2: show result after move
-  let movePhase = 0;
+  if (!moves.length)
+    consoleDiv.style.display = "none";
 
-  inputSpan.addEventListener("keydown", e => {
+  caption.innerText = moves[moveIndex] || ""
+
+  document.body.addEventListener("keydown", e => {
     if (e.key === "ArrowDown") {
+      e.preventDefault();
       movePhase++;
       if (movePhase > 1 && moveIndex === moves.length)
         movePhase--
-      if (movePhase === 2) {
+      if (movePhase === 1) {
         cube.apply_moves(moves[moveIndex])
-        moveSpans[moveIndex].style.textDecoration = "line-through"
+        caption.style.textDecoration = moveSpans[moveIndex].style.textDecoration = "line-through"
       }
-      if (movePhase === 3) {
+      if (movePhase === 2) {
         movePhase = 0;
         moveIndex++;
         if (moveIndex === moves.length)
           endMessage.style.display = "inline";
+        caption.innerText = moves[moveIndex] || ""
+        caption.style.textDecoration = "none"
       }
     } else if (e.key === "ArrowUp") {
+      e.preventDefault();
       movePhase--;
       endMessage.style.display = "none";
-      if (movePhase < 0 && moveIndex === 0)
+      if (movePhase < -1 && moveIndex === 0)
         movePhase++
-      if (movePhase === 1) {
+      else if (movePhase === 0) {
         cube.unapply_moves(moves[moveIndex])
-        moveSpans[moveIndex].style.textDecoration = "none"
+        caption.style.textDecoration = moveSpans[moveIndex].style.textDecoration = "none"
       }
-      if (movePhase === -1) {
-        movePhase = 2;
+      if (movePhase === -1 && moveIndex) {
+        movePhase = 1;
         moveIndex--;
+        caption.innerText = moves[moveIndex] || ""
+        caption.style.textDecoration = "line-through"
       }
     }
     cube.flush_all_moves();
@@ -96,17 +98,23 @@ export default () => {
     cell.innerText = "0a1b2c3d4f5g6h7j8i"[value];
     cell.className = `
       c${value / 2 | 0}
-      ${underlineCells[moveIndex + (movePhase === 2 ? 1 : 0)][index] ? "underline" : ""}
-      ${affectedCells[index]
-        ? moveIndex === moves.length
-          ? value === origState[index]
-            ? "fade"
-            : ""
-          : movePhase !== 0 && !inMove(moves[moveIndex], index)
-            ? "fade"
-            : ""
-        : "hide"}
-    `;
+      ${(moves.length && underlineCells[moveIndex + (movePhase === 1 ? 1 : 0)] || [])[index] ? "underline" : ""
+      }
+  ${moves.length
+        ? affectedCells[index]
+          ? moveIndex === moves.length
+            ? value === origState[index]
+              ? "fade"
+              : ""
+            : movePhase !== -1 && !inMove(moves[moveIndex], index)
+              ? "fade"
+              : ""
+          : "hide"
+        : (underlineCells[0] || { [index]: true })[index]
+          ? ""
+          : "fade"
+      }
+  `;
   }
 
   function inMove(move: string, index: number) {
