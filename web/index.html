@@ -86,8 +86,21 @@
       opacity: .1;
     }
 
-    #cube span.underline {
-      text-decoration: underline;
+    #cube span.mark:before,
+    #cube span.mark2:before {
+      content: "";
+      position: absolute;
+      width: 16px;
+      height: 15px;
+      background-color: #454850;
+      opacity: .5;
+      z-index: -1;
+      transform: translate(-3.5px, .5px);
+    }
+
+    #cube span.mark2:before {
+      border: 1px solid #bdc3c7;
+      box-sizing: border-box;
     }
 
     #cube>span {

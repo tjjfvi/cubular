@@ -3,14 +3,18 @@ import { consoleDiv, inputSpan, writeLine } from "./console";
 import { caption, cube, getCubeBuffer, paint, title } from "./cube";
 
 export default () => {
-  const match = /^#(?:([a-zA-Z ]+):)?([0-8]{729})((?:-[1-7]{3}[XYZ]\d(?:@[0-8]{3})*)*-(?:@[0-8]{3})*)?$/.exec(location.hash);
+  const match = /^#(?:([a-zA-Z ]+):)?([0-8]{729})((?:-[1-7]{3}[XYZ]\d(?:@@?[0-8]{3})*)*-(?:@@?[0-8]{3})*)?$/.exec(location.hash);
   if (!match) return false
 
   const [, name, pattern, movesStr = ""] = match;
   const moves = movesStr.split("-").slice(1, -1).map(x => x.slice(0, 5));
   const cubeBuffer = getCubeBuffer();
   const origState = Array(729);
-  let underlineCells = movesStr.split("-").slice(1).map(x => x.split("@").slice(1).map(x => parseInt(x, 9))).map(x => Array.from({ length: 729 }, (_, i) => x.includes(i)));
+  let markCells = movesStr
+    .split("-")
+    .slice(1)
+    .map(x => (x.match(/@@?\d\d\d/g) ?? []).map(x => [x.slice(0, -3), parseInt(x.slice(-3), 9)] as const))
+    .map(x => Array.from({ length: 729 }, (_, i) => x.find(x => x[1] === i)?.[0]));
   let affectedCells = Array.from({ length: 729 }, (_, i) => !moves.length || moves.some(m => inMove(m, i)));
 
   for (let x = 0; x < 9; x++) {
@@ -39,7 +43,7 @@ export default () => {
     return span;
   });
 
-  let endMessage = writeLine("\nDone. Highlighting changed pieces.");
+  let endMessage = writeLine("\nDone.");
   endMessage.style.display = "none";
 
   let moveIndex = 0;
@@ -95,22 +99,22 @@ export default () => {
   paint(paintCb);
 
   function paintCb(cell: HTMLSpanElement, value: number, solvedValue: number, index: number) {
+    let curMarkCells = (moves.length && markCells[moveIndex + (movePhase === 1 ? 1 : 0)] || []);
     cell.innerText = "0a1b2c3d4f5g6h7j8i"[value];
     cell.className = `
       c${value / 2 | 0}
-      ${(moves.length && underlineCells[moveIndex + (movePhase === 1 ? 1 : 0)] || [])[index] ? "underline" : ""
-      }
-  ${moves.length
+      ${curMarkCells[index] ? curMarkCells[index] === "@@" ? "mark2" : "mark" : ""}
+      ${moves.length
         ? affectedCells[index]
           ? moveIndex === moves.length
-            ? value === origState[index]
-              ? "fade"
-              : ""
+            ? curMarkCells[index]
+              ? ""
+              : "fade"
             : movePhase !== -1 && !inMove(moves[moveIndex], index)
               ? "fade"
               : ""
           : "hide"
-        : (underlineCells[0] || { [index]: true })[index]
+        : (markCells[0] || { [index]: true })[index]
           ? ""
           : "fade"
       }
