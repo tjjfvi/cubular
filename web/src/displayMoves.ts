@@ -3,11 +3,11 @@ import { consoleDiv, inputSpan, writeLine } from "./console";
 import { caption, cube, getCubeBuffer, paint, title } from "./cube";
 
 export default () => {
-  const match = /^#(?:([a-zA-Z ]+):)?([0-8]{729})((?:-[1-7]{3}[XYZ]\d(?:@@?[0-8]{3})*)*-(?:@@?[0-8]{3})*)?$/.exec(location.hash);
+  const match = /^#(?:([a-zA-Z ]+):)?([0-8]{729})((?:-[1-7]{3}[XYZ]\dt?(?:@@?[0-8]{3})*)*-(?:@@?[0-8]{3})*)?$/.exec(location.hash);
   if (!match) return false
 
   const [, name, pattern, movesStr = ""] = match;
-  const moves = movesStr.split("-").slice(1, -1).map(x => x.slice(0, 5));
+  const moves = movesStr.split("-").slice(1, -1).map(x => x.split("@")[0]);
   const cubeBuffer = getCubeBuffer();
   const origState = Array(729);
   let markCells = movesStr
@@ -64,7 +64,7 @@ export default () => {
       if (movePhase > 1 && moveIndex === moves.length)
         movePhase--
       if (movePhase === 1) {
-        cube.apply_moves(moves[moveIndex])
+        cube[moves[moveIndex].endsWith("t") ? "apply_thin_moves" : "apply_moves"](moves[moveIndex].slice(0, 5))
         caption.style.textDecoration = moveSpans[moveIndex].style.textDecoration = "line-through"
       }
       if (movePhase === 2) {
@@ -82,7 +82,7 @@ export default () => {
       if (movePhase < -1 && moveIndex === 0)
         movePhase++
       else if (movePhase === 0) {
-        cube.unapply_moves(moves[moveIndex])
+        cube[moves[moveIndex].endsWith("t") ? "unapply_thin_moves" : "unapply_moves"](moves[moveIndex].slice(0, 5))
         caption.style.textDecoration = moveSpans[moveIndex].style.textDecoration = "none"
       }
       if (movePhase === -1 && moveIndex) {
@@ -125,7 +125,10 @@ export default () => {
     let x = index / 81 | 0;
     let y = (index / 9 | 0) % 9;
     let z = index % 9;
-    return (Math.abs(x - +move[0]) <= 1) && (Math.abs(y - +move[1]) <= 1) && (Math.abs(z - +move[2]) <= 1)
+    let in3x3x3 = (Math.abs(x - +move[0]) <= 1) && (Math.abs(y - +move[1]) <= 1) && (Math.abs(z - +move[2]) <= 1);
+    let in1x3x3 = in3x3x3 && { X: x === +move[0], Y: y === +move[1], Z: z === +move[2] }[move[3]]
+    let isThinMove = move.endsWith("t");
+    return isThinMove ? in1x3x3 : in3x3x3;
   }
 
   return true

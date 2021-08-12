@@ -65,6 +65,16 @@ impl ExternCube {
     <_ as Scramble>::scramble(self, iterations);
   }
 
+  pub fn apply_thin_moves(&mut self, moves_str: String) -> Result<(), JsValue> {
+    <_ as ApplyThinMove>::apply_thin_moves(self, parse_moves_str(&moves_str)?);
+    Ok(())
+  }
+
+  pub fn unapply_thin_moves(&mut self, moves_str: String) -> Result<(), JsValue> {
+    <_ as ApplyThinMove>::apply_thin_moves(self, parse_moves_str(&moves_str)?.reverse_moves());
+    Ok(())
+  }
+
   pub fn apply_moves(&mut self, moves_str: String) -> Result<(), JsValue> {
     <_ as Cube>::apply_moves(self, parse_moves_str(&moves_str)?);
     Ok(())
