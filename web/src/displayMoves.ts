@@ -100,7 +100,7 @@ export default () => {
 
   function paintCb(cell: HTMLSpanElement, value: number, solvedValue: number, index: number) {
     let curMarkCells = (moves.length && markCells[moveIndex + (movePhase === 1 ? 1 : 0)] || []);
-    cell.innerText = "0a1b2c3d4f5g6h7j8i"[value];
+    cell.innerText = "0a1b2c3d4e5f6g7h8i"[value];
     cell.className = `
       c${value / 2 | 0}
       ${curMarkCells[index] ? curMarkCells[index] === "@@" ? "mark2" : "mark" : ""}
