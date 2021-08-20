@@ -32,58 +32,67 @@ export default () => {
 
   cube.cancel_queued_moves();
 
+  if (!moves.length) {
+    paint(paintCb);
+    consoleDiv.style.display = "none";
+    return true
+  }
+
+  caption.innerText = "Goal";
+  moves.map(applyMove);
+  cube.flush_all_moves();
+
   document.getElementById("input")!.style.display = "none";
 
   writeLine("\nMoves: (use up/down arrows to step through)")
-  const moveSpans = moves.map((m, i) => {
-    const line = writeLine(` ${(i + 1).toString().padStart(moves.length.toString().length)}. `)
-    const span = document.createElement("span");
-    span.textContent = m;
-    line.appendChild(span);
-    return span;
-  });
+  const goalSpan = printCaretLine("Goal");
+  const startSpan = printCaretLine("Start");
+  const moveSpans = moves.map(printCaretLine);
+  const endSpan = printCaretLine("End");
 
-  let endMessage = writeLine("\nDone.");
-  endMessage.style.display = "none";
+  goalSpan.textContent = ">";
 
-  let moveIndex = 0;
+  let moveIndex = moves.length;
 
   // 0: highlight parts that will be affected
   // 1: show result after move
-  let movePhase = -1;
-
-  if (!moves.length)
-    consoleDiv.style.display = "none";
-
-  caption.innerText = moves[moveIndex] || ""
+  let movePhase = 1;
 
   document.body.addEventListener("keydown", e => {
-    if (e.key === "ArrowDown") {
+    if (e.key === "ArrowDown" || e.key === "ArrowRight") {
       e.preventDefault();
       movePhase++;
-      if (movePhase > 1 && moveIndex === moves.length)
-        movePhase--
-      if (movePhase === 1) {
-        cube[moves[moveIndex].endsWith("t") ? "apply_thin_moves" : "apply_moves"](moves[moveIndex].slice(0, 5))
-        caption.style.textDecoration = moveSpans[moveIndex].style.textDecoration = "line-through"
+      if (movePhase > 1 && moveIndex === moves.length){
+        moves.slice().reverse().map(unapplyMove);
+        movePhase = -1;
+        moveIndex = 0;
+        caption.innerText = "Start";
       }
-      if (movePhase === 2) {
+      else if (movePhase === 1 && moveIndex === moves.length){
+        movePhase = 0;
+        moveIndex = moves.length;
+        caption.innerText = "End";
+      }
+      else if (movePhase === 1) {
+        applyMove(moves[moveIndex]);
+        caption.style.textDecoration = "line-through"
+      }
+      else if (movePhase === 2) {
         movePhase = 0;
         moveIndex++;
-        if (moveIndex === moves.length)
-          endMessage.style.display = "inline";
-        caption.innerText = moves[moveIndex] || ""
+      }
+      if(movePhase === 0){
+        caption.innerText = moves[moveIndex] || "End/Goal"
         caption.style.textDecoration = "none"
       }
-    } else if (e.key === "ArrowUp") {
+    } else if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
       e.preventDefault();
       movePhase--;
-      endMessage.style.display = "none";
-      if (movePhase < -1 && moveIndex === 0)
+      if (movePhase === 0 && moveIndex === moves.length)
         movePhase++
       else if (movePhase === 0) {
-        cube[moves[moveIndex].endsWith("t") ? "unapply_thin_moves" : "unapply_moves"](moves[moveIndex].slice(0, 5))
-        caption.style.textDecoration = moveSpans[moveIndex].style.textDecoration = "none"
+        unapplyMove(moves[moveIndex]);
+        caption.style.textDecoration = "none"
       }
       if (movePhase === -1 && moveIndex) {
         movePhase = 1;
@@ -91,26 +100,34 @@ export default () => {
         caption.innerText = moves[moveIndex] || ""
         caption.style.textDecoration = "line-through"
       }
+      if (movePhase === -2) {
+        moves.map(applyMove);
+        moveIndex = moves.length;
+        movePhase = 1;
+        caption.innerText = "Goal";
+      }
     }
     cube.flush_all_moves();
+    [goalSpan, startSpan, ...moveSpans, endSpan].forEach(x => x.textContent = " ");
+    (movePhase === -1 ? startSpan : moveSpans[moveIndex] ?? [endSpan, goalSpan][movePhase]).textContent = movePhase === 0 && moveIndex !== moves.length ? ">" : "="
     paint(paintCb);
   })
 
   paint(paintCb);
 
   function paintCb(cell: HTMLSpanElement, value: number, solvedValue: number, index: number) {
-    let curMarkCells = (moves.length && markCells[moveIndex + (movePhase === 1 ? 1 : 0)] || []);
+    let curMarkCells = (moves.length && markCells[moveIndex + (movePhase === 1 && moveIndex !== moves.length ? 1 : 0)] || []);
     cell.innerText = "0a1b2c3d4e5f6g7h8i"[value];
     cell.className = `
       c${value / 2 | 0}
       ${curMarkCells[index] ? curMarkCells[index] === "@@" ? "mark2" : "mark" : ""}
       ${moves.length
         ? affectedCells[index]
-          ? moveIndex === moves.length
+          ? moveIndex === moves.length || movePhase < 0
             ? curMarkCells[index]
               ? ""
               : "fade"
-            : movePhase !== -1 && !inMove(moves[moveIndex], index)
+            : !inMove(moves[moveIndex], index)
               ? "fade"
               : ""
           : "hide"
@@ -129,6 +146,22 @@ export default () => {
     let in1x3x3 = in3x3x3 && { X: x === +move[0], Y: y === +move[1], Z: z === +move[2] }[move[3]]
     let isThinMove = move.endsWith("t");
     return isThinMove ? in1x3x3 : in3x3x3;
+  }
+
+  function applyMove(move: string){
+    cube[move.endsWith("t") ? "apply_thin_moves" : "apply_moves"](move.slice(0, 5))
+  }
+
+  function unapplyMove(move: string){
+    cube[move.endsWith("t") ? "unapply_thin_moves" : "unapply_moves"](move.slice(0, 5))
+  }
+
+  function printCaretLine(text: string){
+    const line = writeLine(` `)
+    const span = document.createElement("span");
+    span.textContent = " ";
+    line.append(span, " " + text);
+    return span;
   }
 
   return true
