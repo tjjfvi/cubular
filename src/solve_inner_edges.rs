@@ -2,8 +2,11 @@ use crate::*;
 
 pub struct SolveInnerEdges;
 impl SolveStep for SolveInnerEdges {
-  fn in_bounds(&self, pos: Pos) -> bool {
-    true
+  fn move_pool<C: Cube>(&self, _cube: &mut C, from: Pos, to: Pos) {
+    assert_eq!(from, to)
+  }
+  fn classify<C: Cube>(&self, _cube: &C, pos: Pos) -> PosClass {
+    let in_bounds = true
       && pos.0 >= 1
       && pos.0 <= 3
       && pos.1 >= 1
@@ -11,14 +14,12 @@ impl SolveStep for SolveInnerEdges {
       && pos.2 >= 1
       && pos.2 <= 3
       && pos.parity() == 0
-      && pos != Pos(2, 2, 2)
-  }
-  fn move_pool<C: Cube>(&self, _cube: &mut C, from: Pos, to: Pos) {
-    assert_eq!(from, to)
-  }
-  fn get_swap<C: Cube>(&self, _cube: &C, pos: Pos) -> Option<Swap> {
+      && pos != Pos(2, 2, 2);
+    if !in_bounds {
+      return PosClass::Other;
+    }
     let initial_moves = match pos {
-      Pos(3, 2, 1) => return None, // once all of the others are solved, this must be too
+      Pos(3, 2, 1) => return PosClass::Pool, // once all of the others are solved, this must be too
       Pos(1, 2, 1) => vec![],
       Pos(x, y, 3) => vec![
         Move(
@@ -66,11 +67,11 @@ impl SolveStep for SolveInnerEdges {
     let mut moves = initial_moves.clone();
     moves.extend_from_slice(&T_PERMUTATION);
     moves.extend(initial_moves.reverse_moves());
-    Some(Swap {
+    PosClass::Active {
       index: if pos == Pos(3, 2, 1) { 1 } else { 0 },
       source: Pos(3, 2, 1),
       moves,
-    })
+    }
   }
   fn apply_move<C: Cube>(&self, cube: &mut C, m: Move) {
     cube.apply_thin_move(m);

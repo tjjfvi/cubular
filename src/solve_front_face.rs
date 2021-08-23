@@ -2,16 +2,16 @@ use crate::*;
 
 pub struct SolveFrontFace;
 impl SolveStep for SolveFrontFace {
-  fn get_swap<C: Cube>(&self, cube: &C, pos: Pos) -> Option<Swap> {
+  fn classify<C: Cube>(&self, cube: &C, pos: Pos) -> PosClass {
     let size = cube.size();
     let Pos(x, y, z) = pos;
     if z != 0 {
-      return None;
+      return PosClass::Pool;
     };
     let index = y * size.0 + x;
-    Some(if y + 2 >= size.1 {
+    if y + 2 >= size.1 {
       if x + 2 >= size.0 {
-        Swap {
+        PosClass::Active {
           index,
           source: Pos(size.0 - 4 + size.1 - y, size.1 - 1, 5 + x - size.0),
           moves: vec![
@@ -27,7 +27,7 @@ impl SolveStep for SolveFrontFace {
           ],
         }
       } else {
-        Swap {
+        PosClass::Active {
           index,
           source: Pos(x, size.1 - 1, 5 + y - size.1),
           moves: vec![
@@ -39,7 +39,7 @@ impl SolveStep for SolveFrontFace {
       }
     } else {
       if x + 2 >= size.0 {
-        Swap {
+        PosClass::Active {
           index,
           source: Pos(size.0 - 1, y, 5 + x - size.0),
           moves: vec![
@@ -49,13 +49,13 @@ impl SolveStep for SolveFrontFace {
           ],
         }
       } else {
-        Swap {
+        PosClass::Active {
           index,
           source: pos + Pos(0, 0, 2),
           moves: vec![Move(pos + Pos(1, 1, 1), Axis::Y, 1)],
         }
       }
-    })
+    }
   }
   fn move_pool<C: Cube>(&self, cube: &mut C, from: Pos, to: Pos) {
     _move_piece(

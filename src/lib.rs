@@ -17,7 +17,6 @@ mod solve_inner_cross;
 mod solve_inner_edges;
 mod solve_inner_shell;
 mod solve_step;
-mod swap;
 mod swap_axes;
 mod value;
 
@@ -40,6 +39,5 @@ pub use solve_inner_cross::*;
 pub use solve_inner_edges::*;
 pub use solve_inner_shell::*;
 pub use solve_step::*;
-pub use swap::*;
 pub use swap_axes::*;
 pub use value::*;

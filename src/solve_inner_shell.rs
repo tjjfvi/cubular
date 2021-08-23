@@ -121,32 +121,29 @@ impl SolveStep for SolveInnerShell {
       }
     }
   }
-  fn get_swap<C: Cube>(&self, cube: &C, pos: Pos) -> Option<Swap> {
+  fn classify<C: Cube>(&self, cube: &C, pos: Pos) -> PosClass {
     match pos {
       // move the center into position at the end
-      Pos(2, 2, 2) => Some(Swap {
+      Pos(2, 2, 2) => PosClass::Active {
         index: 100,
         source: Pos(2, 2, 2),
         moves: vec![],
-      }),
-      p if in_inner(p) => None,
-      _ => Some(match pos {
+      },
+      p if in_inner(p) => PosClass::Pool,
+      _ => match pos {
         p if p.0 >= 3 || p.1 >= 3 => self
-          .get_swap(cube, pos.rotate(Axis::Z, 1, 5))
-          .unwrap()
+          .classify(cube, pos.rotate(Axis::Z, 1, 5))
           .tap_mut(|x| x.rotate(Axis::Z, -1, 5)),
         p if p.2 >= 1 => {
           let axis = if p.1 == 0 { Axis::X } else { Axis::Y };
           self
-            .get_swap(cube, pos.rotate(axis, 1, 5))
-            .unwrap()
+            .classify(cube, pos.rotate(axis, 1, 5))
             .tap_mut(|x| x.rotate(axis, -1, 5))
         }
         p if p.1 > p.0 => self
-          .get_swap(cube, pos.swap_axes(Axis::X, Axis::Y))
-          .unwrap()
+          .classify(cube, pos.swap_axes(Axis::X, Axis::Y))
           .tap_mut(|x| x.swap_axes(Axis::X, Axis::Y)),
-        Pos(0, 0, 0) => Swap {
+        Pos(0, 0, 0) => PosClass::Active {
           index: 0,
           source: Pos(2, 2, 2),
           moves: vec![
@@ -154,7 +151,7 @@ impl SolveStep for SolveInnerShell {
             Move(Pos(1, 1, 1), Axis::X, 1),
           ],
         },
-        Pos(1, 0, 0) => Swap {
+        Pos(1, 0, 0) => PosClass::Active {
           index: 1,
           source: Pos(2, 3, 2),
           moves: vec![
@@ -165,7 +162,7 @@ impl SolveStep for SolveInnerShell {
             Move(Pos(1, 1, 1), Axis::Z, -1),
           ],
         },
-        Pos(2, 0, 0) => Swap {
+        Pos(2, 0, 0) => PosClass::Active {
           index: 2,
           source: Pos(2, 2, 2),
           moves: vec![
@@ -177,7 +174,7 @@ impl SolveStep for SolveInnerShell {
             Move(Pos(1, 1, 1), Axis::Z, -1),
           ],
         },
-        Pos(1, 1, 0) => Swap {
+        Pos(1, 1, 0) => PosClass::Active {
           index: 3,
           source: Pos(3, 3, 2),
           moves: vec![
@@ -188,7 +185,7 @@ impl SolveStep for SolveInnerShell {
             Move(Pos(1, 1, 1), Axis::Z, -1),
           ],
         },
-        Pos(2, 1, 0) => Swap {
+        Pos(2, 1, 0) => PosClass::Active {
           index: 4,
           source: Pos(1, 2, 2),
           moves: vec![
@@ -200,7 +197,7 @@ impl SolveStep for SolveInnerShell {
             Move(Pos(1, 1, 1), Axis::Z, 1),
           ],
         },
-        Pos(2, 2, 0) => Swap {
+        Pos(2, 2, 0) => PosClass::Active {
           index: 5,
           source: Pos(2, 3, 3),
           moves: vec![
@@ -213,7 +210,7 @@ impl SolveStep for SolveInnerShell {
           ],
         },
         _ => panic!("Unreachable"),
-      }),
+      },
     }
   }
 }

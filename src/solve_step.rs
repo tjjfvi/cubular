@@ -3,11 +3,8 @@ use std::collections::HashSet;
 use crate::*;
 
 pub trait SolveStep {
-  fn get_swap<C: Cube>(&self, cube: &C, pos: Pos) -> Option<Swap>;
+  fn classify<C: Cube>(&self, cube: &C, pos: Pos) -> PosClass;
   fn move_pool<C: Cube>(&self, cube: &mut C, from: Pos, to: Pos);
-  fn in_bounds(&self, _pos: Pos) -> bool {
-    true
-  }
   fn apply_move<C: Cube>(&self, cube: &mut C, m: Move) {
     cube.apply_move(m);
   }
@@ -15,17 +12,17 @@ pub trait SolveStep {
     let mut solved = <HashSet<Pos>>::new();
     let mut todo: Vec<_> = cube
       .iter()
-      .map(|x| x.0)
-      .filter_map(|x| {
-        if self.in_bounds(x) {
-          self.get_swap(cube, x).and_then(|swap| Some((x, swap)))
-        } else {
-          None
-        }
+      .filter_map(|(pos, _)| match self.classify(cube, pos) {
+        PosClass::Active {
+          index,
+          source,
+          moves,
+        } => Some((pos, index, source, moves)),
+        _ => None,
       })
       .collect();
-    todo.sort_by_key(|x| x.1.index);
-    for (pos, swap) in todo {
+    todo.sort_by_key(|x| x.1);
+    for (pos, _, source, moves) in todo {
       solved.insert(pos);
       let solved_value = cube.get_solved(pos);
       if cube.get(pos) == solved_value {
@@ -33,20 +30,29 @@ pub trait SolveStep {
       }
       let from = cube
         .iter()
-        .find(|(p, v)| *v == solved_value && self.in_bounds(*p) && !solved.contains(p))
+        .find(|&(p, v)| {
+          v == solved_value
+            && !matches!(self.classify(cube, p), PosClass::Other)
+            && !solved.contains(&p)
+        })
         .unwrap()
         .0;
-      if let Some(from_swap) = self.get_swap(cube, from) {
-        for m in from_swap.moves.reverse_moves() {
+      if let PosClass::Active {
+        moves: other_moves,
+        source: other_source,
+        ..
+      } = self.classify(cube, from)
+      {
+        for m in other_moves.reverse_moves() {
           self.apply_move(cube, m);
         }
-        debug_assert_eq!(cube.get(from_swap.source), solved_value);
-        self.move_pool(cube, from_swap.source, swap.source);
+        debug_assert_eq!(cube.get(other_source), solved_value);
+        self.move_pool(cube, other_source, source);
       } else {
-        self.move_pool(cube, from, swap.source);
+        self.move_pool(cube, from, source);
       }
-      debug_assert_eq!(cube.get(swap.source), solved_value);
-      for m in swap.moves {
+      debug_assert_eq!(cube.get(source), solved_value);
+      for m in moves {
         self.apply_move(cube, m);
       }
       debug_assert_eq!(cube.get(pos), solved_value);
@@ -62,3 +68,68 @@ pub trait ApplySolveStep: Cube + Sized {
 }
 
 impl<T: Cube> ApplySolveStep for T {}
+
+#[derive(Debug)]
+pub enum PosClass {
+  Active {
+    index: usize,
+    source: Pos,
+    moves: Vec<Move>,
+  },
+  Pool,
+  Other,
+}
+
+impl PosClass {
+  pub fn swap_axes(&mut self, from: Axis, to: Axis) {
+    match self {
+      Self::Active { source, moves, .. } => {
+        *source = source.swap_axes(from, to);
+        for m in moves.iter_mut() {
+          m.0 = m.0.swap_axes(from, to);
+          if m.1 == from {
+            m.1 = to;
+          } else if m.1 == to {
+            m.1 = from;
+          } else {
+            m.1;
+            m.2 = -m.2;
+          }
+        }
+      }
+      _ => {}
+    }
+  }
+  pub fn rotate(&mut self, axis: Axis, amount: i8, max: usize) {
+    let amount = amount.rem_euclid(4);
+    if amount == 0 {
+      return;
+    }
+    match self {
+      Self::Active { source, moves, .. } => {
+        *source = source.rotate(axis, amount, max);
+        for m in moves.iter_mut() {
+          m.0 = m.0.rotate(axis, amount, max);
+          if amount != 2 {
+            m.1 = match (axis, m.1) {
+              (Axis::Y, Axis::Z) | (Axis::Z, Axis::Y) => Axis::X,
+              (Axis::X, Axis::Z) | (Axis::Z, Axis::X) => Axis::Y,
+              (Axis::X, Axis::Y) | (Axis::Y, Axis::X) => Axis::Z,
+              _ => axis,
+            };
+          }
+          if m.1
+            == match axis {
+              Axis::X => Axis::Y,
+              Axis::Y => Axis::Z,
+              Axis::Z => Axis::X,
+            }
+          {
+            m.2 = -m.2;
+          }
+        }
+      }
+      _ => {}
+    }
+  }
+}

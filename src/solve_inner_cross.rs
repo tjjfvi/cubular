@@ -2,15 +2,6 @@ use crate::*;
 
 pub struct SolveInnerCross;
 impl SolveStep for SolveInnerCross {
-  fn in_bounds(&self, pos: Pos) -> bool {
-    pos.0 >= 1
-      && pos.0 <= 3
-      && pos.1 >= 1
-      && pos.1 <= 3
-      && pos.2 >= 1
-      && pos.2 <= 3
-      && pos.parity() == 1
-  }
   fn move_pool<C: Cube>(&self, cube: &mut C, from: Pos, to: Pos) {
     fn f(pos: Pos) -> i8 {
       if pos.0 == 1 {
@@ -32,9 +23,19 @@ impl SolveStep for SolveInnerCross {
       cube.apply_thin_move(Move(Pos(2, to.1, 2), Axis::Y, (to.0 + to.2 - 1) as i8 % 4));
     }
   }
-  fn get_swap<C: Cube>(&self, _cube: &C, pos: Pos) -> Option<Swap> {
+  fn classify<C: Cube>(&self, _cube: &C, pos: Pos) -> PosClass {
+    let in_bounds = pos.0 >= 1
+      && pos.0 <= 3
+      && pos.1 >= 1
+      && pos.1 <= 3
+      && pos.2 >= 1
+      && pos.2 <= 3
+      && pos.parity() == 1;
+    if !in_bounds {
+      return PosClass::Other;
+    }
     match pos {
-      Pos(x, 2, 2) => Some(Swap {
+      Pos(x, 2, 2) => PosClass::Active {
         index: 0,
         source: Pos(x, 1, 1),
         moves: vec![
@@ -43,8 +44,8 @@ impl SolveStep for SolveInnerCross {
           Move(Pos(x, 2, 1), Axis::X, -1),
           Move(Pos(x, 1, 2), Axis::X, 1),
         ],
-      }),
-      Pos(2, y, 2) => Some(Swap {
+      },
+      Pos(2, y, 2) => PosClass::Active {
         index: 0,
         source: Pos(1, y, 1),
         moves: vec![
@@ -53,8 +54,8 @@ impl SolveStep for SolveInnerCross {
           Move(Pos(2, y, 1), Axis::Y, -1),
           Move(Pos(1, y, 2), Axis::Y, 1),
         ],
-      }),
-      Pos(2, 2, z) => Some(Swap {
+      },
+      Pos(2, 2, z) => PosClass::Active {
         index: 0,
         source: Pos(1, 1, z),
         moves: vec![
@@ -63,8 +64,8 @@ impl SolveStep for SolveInnerCross {
           Move(Pos(2, 1, z), Axis::Z, -1),
           Move(Pos(1, 2, z), Axis::Z, 1),
         ],
-      }),
-      _ => None,
+      },
+      _ => PosClass::Pool,
     }
   }
   fn apply_move<C: Cube>(&self, cube: &mut C, m: Move) {
