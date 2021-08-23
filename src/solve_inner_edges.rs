@@ -6,15 +6,8 @@ impl SolveStep for SolveInnerEdges {
     assert_eq!(from, to)
   }
   fn classify<C: Cube>(&self, _cube: &C, pos: Pos) -> PosClass {
-    let in_bounds = true
-      && pos.0 >= 1
-      && pos.0 <= 3
-      && pos.1 >= 1
-      && pos.1 <= 3
-      && pos.2 >= 1
-      && pos.2 <= 3
-      && pos.parity() == 0
-      && pos != Pos(2, 2, 2);
+    let in_bounds =
+      pos.within(Pos(1, 1, 1), Pos(3, 3, 3)) && pos.parity() == 0 && pos != Pos(2, 2, 2);
     if !in_bounds {
       return PosClass::Other;
     }

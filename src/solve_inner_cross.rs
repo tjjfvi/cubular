@@ -24,13 +24,7 @@ impl SolveStep for SolveInnerCross {
     }
   }
   fn classify<C: Cube>(&self, _cube: &C, pos: Pos) -> PosClass {
-    let in_bounds = pos.0 >= 1
-      && pos.0 <= 3
-      && pos.1 >= 1
-      && pos.1 <= 3
-      && pos.2 >= 1
-      && pos.2 <= 3
-      && pos.parity() == 1;
+    let in_bounds = pos.within(Pos(1, 1, 1), Pos(3, 3, 3)) && pos.parity() == 1;
     if !in_bounds {
       return PosClass::Other;
     }

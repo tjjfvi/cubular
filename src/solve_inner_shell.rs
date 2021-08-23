@@ -216,5 +216,5 @@ impl SolveStep for SolveInnerShell {
 }
 
 fn in_inner(p: Pos) -> bool {
-  p.0 >= 1 && p.0 <= 3 && p.1 >= 1 && p.1 <= 3 && p.2 >= 1 && p.2 <= 3
+  p.within(Pos(1, 1, 1), Pos(3, 3, 3))
 }

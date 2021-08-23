@@ -28,6 +28,15 @@ impl Pos {
   pub fn parity(self) -> usize {
     (self.0 + self.1 + self.2) % 2
   }
+  pub fn within(self, min: Pos, max: Pos) -> bool {
+    true
+      && self.0 >= min.0
+      && self.0 <= max.0
+      && self.1 >= min.1
+      && self.1 <= max.1
+      && self.2 >= min.2
+      && self.2 <= max.2
+  }
 }
 
 impl Add for Pos {
