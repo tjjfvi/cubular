@@ -133,7 +133,7 @@ export default () => {
           : "hide"
         : (markCells[0] || { [index]: true })[index]
           ? ""
-          : "fade"
+          : "dim"
       }
   `;
   }
