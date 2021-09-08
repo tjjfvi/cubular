@@ -61,3 +61,16 @@ pub fn parse_moves_str(str: &str) -> Result<Vec<Move>, String> {
     .map(parse_move_str)
     .collect()
 }
+
+// Uses the challenge's coordinate system
+pub fn get_compat_move_str(m: &Move) -> String {
+  get_move_str(&Move(
+    Pos(m.0 .0, m.0 .2, m.0 .1),
+    match m.1 {
+      Axis::X => Axis::X,
+      Axis::Y => Axis::Z,
+      Axis::Z => Axis::Y,
+    },
+    if m.1 == Axis::Z { -m.2 } else { m.2 },
+  ))
+}

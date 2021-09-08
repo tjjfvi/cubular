@@ -64,6 +64,7 @@ impl Cube for LoggingCube {
     self.0.size()
   }
   fn apply_move(&mut self, m: Move) {
+    // Change to get_compat_move_str to output in the challenge's coordinate system
     println!("{}", get_move_str(&m));
     self.0.apply_move(m);
   }
