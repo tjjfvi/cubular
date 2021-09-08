@@ -54,7 +54,7 @@ impl SolveStep for SolveInnerShell {
               (Axis::Z, Axis::X) => (Axis::Y, -1),
               (Axis::Y, Axis::Z) => (Axis::X, 1),
               (Axis::Z, Axis::Y) => (Axis::X, -1),
-              _ => panic!("Unreachable"),
+              _ => unreachable!(),
             };
             cube.apply_move(Move(center, rot_axis, from_dir * to_dir * rot_dir));
           }
@@ -209,7 +209,7 @@ impl SolveStep for SolveInnerShell {
             Move(Pos(3, 3, 2), Axis::X, -1),
           ],
         },
-        _ => panic!("Unreachable"),
+        _ => unreachable!(),
       },
     }
   }

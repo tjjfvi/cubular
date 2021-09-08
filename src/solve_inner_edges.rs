@@ -55,7 +55,7 @@ impl SolveStep for SolveInnerEdges {
         Move(Pos(2, 2, 3), Axis::Z, if y == 3 { -1 } else { 1 }),
         Move(Pos(1, 2, 2), Axis::X, 2),
       ],
-      _ => panic!("Unreachable"),
+      _ => unreachable!(),
     };
     let mut moves = initial_moves.clone();
     moves.extend_from_slice(&T_PERMUTATION);

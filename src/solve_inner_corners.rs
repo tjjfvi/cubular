@@ -45,7 +45,7 @@ impl SolveStep for SolveInnerCorners {
         ),
         Move(Pos(2, 3, 2), Axis::Y, -1),
       ],
-      _ => panic!("Unreachable"),
+      _ => unreachable!(),
     };
     let mut moves = initial_moves.clone();
     moves.extend_from_slice(&Y_PERMUTATION);
