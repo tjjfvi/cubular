@@ -7,7 +7,7 @@
 The source code is up on github at [tjjfvi/cubular](https://github.com/tjjfvi/cubular).
 
 If you'd like to play with the cube and see how it's solved, I've created [an
-interactive visualization](https://tjjfvi.github.io/cubular).
+interactive visualization](https://cubular.t6.fyi).
 
 If you'd like to read about how it's solved, I've written a long detailed
 explanation with interactive illustrations of the process.
@@ -635,7 +635,7 @@ The puzzle is now [entirely solved][solved].
 
 ### Conclusion
 
-[We did it!](https://tjjfvi.github.io/cubular)
+[We did it!](https://cubular.t6.fyi)
 
 
 
@@ -673,97 +673,97 @@ The puzzle is now [entirely solved][solved].
 
 
 [solved]:
-https://tjjfvi.github.io/cubular/#solved
+https://cubular.t6.fyi/#solved
 
 [after-stage-1]:
-https://tjjfvi.github.io/cubular/#after-stage-1
+https://cubular.t6.fyi/#after-stage-1
 
 [after-stage1-step1]:
-https://tjjfvi.github.io/cubular/#after-stage1-step1
+https://cubular.t6.fyi/#after-stage1-step1
 
 [after-stage1-step2]:
-https://tjjfvi.github.io/cubular/#after-stage1-step2
+https://cubular.t6.fyi/#after-stage1-step2
 
 [after-stage1-step3]:
-https://tjjfvi.github.io/cubular/#after-stage1-step3
+https://cubular.t6.fyi/#after-stage1-step3
 
 [after-stage1-step4]:
-https://tjjfvi.github.io/cubular/#after-stage1-step4
+https://cubular.t6.fyi/#after-stage1-step4
 
 [after-stage1-step5]:
-https://tjjfvi.github.io/cubular/#after-stage1-step5
+https://cubular.t6.fyi/#after-stage1-step5
 
 [after-stage1-step6]:
-https://tjjfvi.github.io/cubular/#after-stage1-step6
+https://cubular.t6.fyi/#after-stage1-step6
 
 [after-stage1-step7]:
-https://tjjfvi.github.io/cubular/#after-stage1-step7
+https://cubular.t6.fyi/#after-stage1-step7
 
 [stage1-step1-pool-example]:
-https://tjjfvi.github.io/cubular/#stage1-step1-pool-example
+https://cubular.t6.fyi/#stage1-step1-pool-example
 
 [stage1-step1-A]:
-https://tjjfvi.github.io/cubular/#stage1-step1-A
+https://cubular.t6.fyi/#stage1-step1-A
 
 [stage1-step1-B]:
-https://tjjfvi.github.io/cubular/#stage1-step1-B
+https://cubular.t6.fyi/#stage1-step1-B
 
 [stage1-step1-C]:
-https://tjjfvi.github.io/cubular/#stage1-step1-C
+https://cubular.t6.fyi/#stage1-step1-C
 
 [INTO_CENTER-demo]:
-https://tjjfvi.github.io/cubular/#INTO_CENTER-demo
+https://cubular.t6.fyi/#INTO_CENTER-demo
 
 [stage2-step1-A]:
-https://tjjfvi.github.io/cubular/#stage2-step1-A
+https://cubular.t6.fyi/#stage2-step1-A
 
 [stage2-step1-B]:
-https://tjjfvi.github.io/cubular/#stage2-step1-B
+https://cubular.t6.fyi/#stage2-step1-B
 
 [stage2-step1-C]:
-https://tjjfvi.github.io/cubular/#stage2-step1-C
+https://cubular.t6.fyi/#stage2-step1-C
 
 [stage2-step1-D]:
-https://tjjfvi.github.io/cubular/#stage2-step1-D
+https://cubular.t6.fyi/#stage2-step1-D
 
 [stage2-step1-E]:
-https://tjjfvi.github.io/cubular/#stage2-step1-E
+https://cubular.t6.fyi/#stage2-step1-E
 
 [stage2-step1-F]:
-https://tjjfvi.github.io/cubular/#stage2-step1-F
+https://cubular.t6.fyi/#stage2-step1-F
 
 [after-stage2]:
-https://tjjfvi.github.io/cubular/#after-stage2
+https://cubular.t6.fyi/#after-stage2
 
 [stage3-step1-pieces]:
-https://tjjfvi.github.io/cubular/#stage3-step1-pieces
+https://cubular.t6.fyi/#stage3-step1-pieces
 
 [stage3-step2-pieces]:
-https://tjjfvi.github.io/cubular/#stage3-step2-pieces
+https://cubular.t6.fyi/#stage3-step2-pieces
 
 [stage3-step3-pieces]:
-https://tjjfvi.github.io/cubular/#stage3-step3-pieces
+https://cubular.t6.fyi/#stage3-step3-pieces
 
 [thin-move-dissection]:
-https://tjjfvi.github.io/cubular/#thin-move-dissection
+https://cubular.t6.fyi/#thin-move-dissection
 
 [thin-move-example]:
-https://tjjfvi.github.io/cubular/#thin-move-example
+https://cubular.t6.fyi/#thin-move-example
 
 [stage3-step1-done]:
-https://tjjfvi.github.io/cubular/#stage3-step1-done
+https://cubular.t6.fyi/#stage3-step1-done
 
 [stage3-step1-active]:
-https://tjjfvi.github.io/cubular/#stage3-step1-active
+https://cubular.t6.fyi/#stage3-step1-active
 
 [stage3-step1-pool]:
-https://tjjfvi.github.io/cubular/#stage3-step1-pool
+https://cubular.t6.fyi/#stage3-step1-pool
 
 [stage3-step1-pool-example]:
-https://tjjfvi.github.io/cubular/#stage3-step1-pool-example
+https://cubular.t6.fyi/#stage3-step1-pool-example
 
 [stage3-step1-pool-to-active]:
-https://tjjfvi.github.io/cubular/#stage3-step1-pool-to-active
+https://cubular.t6.fyi/#stage3-step1-pool-to-active
 
 [old-pochmann-1]:
 https://www.speedsolving.com/wiki/index.php/Classic_Pochmann
@@ -772,7 +772,7 @@ https://www.speedsolving.com/wiki/index.php/Classic_Pochmann
 https://ruwix.com/the-rubiks-cube/how-to-solve-the-rubiks-cube-blindfolded-tutorial/
 
 [after-stage3-step1]:
-https://tjjfvi.github.io/cubular/#after-stage3-step1
+https://cubular.t6.fyi/#after-stage3-step1
 
 [stage3-step1-A]:
-https://tjjfvi.github.io/cubular/#stage3-step1-A
+https://cubular.t6.fyi/#stage3-step1-A
