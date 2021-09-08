@@ -22,27 +22,26 @@ mod value;
 
 use std::io::{stdin, Read};
 
-use apply_thin_move::*;
-use cube::*;
-use cube_iter::*;
-use display_cube::*;
-use flip::*;
-use is_solved::*;
-use move_str::*;
-use parse_cube::*;
-use pos::*;
-use r#move::*;
-use scramble::*;
-use slice::*;
-use solve::*;
-use solve_front_face::*;
-use solve_inner_corners::*;
-use solve_inner_cross::*;
-use solve_inner_edges::*;
-use solve_inner_shell::*;
-use solve_step::*;
-use swap_axes::*;
-use value::*;
+pub use apply_thin_move::*;
+pub use cube::*;
+pub use cube_iter::*;
+pub use flip::*;
+pub use is_solved::*;
+pub use move_str::*;
+pub use parse_cube::*;
+pub use pos::*;
+pub use r#move::*;
+pub use scramble::*;
+pub use slice::*;
+pub use solve::*;
+pub use solve_front_face::*;
+pub use solve_inner_corners::*;
+pub use solve_inner_cross::*;
+pub use solve_inner_edges::*;
+pub use solve_inner_shell::*;
+pub use solve_step::*;
+pub use swap_axes::*;
+pub use value::*;
 
 fn main() {
   let mut input = String::new();
