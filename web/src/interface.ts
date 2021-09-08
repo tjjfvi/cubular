@@ -60,7 +60,7 @@ export default () => {
   cubePre.addEventListener("blur", () => {
     cubePre.attributes.getNamedItem("contenteditable")!.value = "false";
     try {
-      cube.set(cubePre.textContent ?? "")
+      cube.set(cubePre.innerText ?? "")
     } catch (e) {
       writeLine(e);
     }
@@ -122,7 +122,7 @@ export default () => {
     else if (cmd === "edit") {
       clearTimeout(timeout);
       cubePre.setAttribute("contenteditable", "true");
-      cubePre.textContent = cubePre.textContent;
+      cubePre.innerText = cubePre.innerText;
       cubePre.focus();
     }
     else if (/\d\d\d[xyz]\d/.test(cmd))
