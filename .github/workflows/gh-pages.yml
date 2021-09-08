@@ -37,3 +37,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: web/dist/
           force_orphan: true
+          cname: cubular.t6.fyi
