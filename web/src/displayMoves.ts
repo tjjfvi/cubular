@@ -1,9 +1,12 @@
 
 import { consoleDiv, inputSpan, writeLine } from "./console";
 import { caption, cube, getCubeBuffer, paint, title } from "./cube";
+import links from "./links"
 
 export default () => {
-  const match = /^#(?:([a-zA-Z ]+):)?([0-8]{729})((?:-[1-7]{3}[XYZ]\dt?(?:@@?[0-8]{3})*)*-(?:@@?[0-8]{3})*)?$/.exec(location.hash);
+  const hash = location.hash.slice(1);
+  const hashData = links[location.hash.slice(1)] || location.hash;
+  const match = /^(?:([a-zA-Z ]+):)?([0-8]{729})((?:-[1-7]{3}[XYZ]\dt?(?:@@?[0-8]{3})*)*-(?:@@?[0-8]{3})*)?$/.exec(hashData);
   if (!match) return false
 
   const [, name, pattern, movesStr = ""] = match;
@@ -28,7 +31,7 @@ export default () => {
     }
   }
 
-  title.innerText = name || ""
+  title.innerText = name || (hash === hashData ? "" : hash)
 
   cube.cancel_queued_moves();
 
