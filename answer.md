@@ -1,13 +1,17 @@
 
-# Rust, XYZ bytes
+# Rust, 38323 bytes
 
 *Because it's "enough of a challenge as it is" I didn't "make it
 [tag:code-golf] just to spice it up a bit more".*
 
-The source code is up on github at [tjjfvi/cubular](https://github.com/tjjfvi/cubular).
+The solution is hosted [on GitHub][main.rs]. Running `cargo run` in the root
+directory will take the cube from stdin and output a list of moves that solves
+the inputted cube. Input can be in any of the forms from the question and this
+answer. The output will use a modified coordinate system by default, but can be
+changed to use the question's coordinate system by changing line 68.
 
 If you'd like to play with the cube and see how it's solved, I've created [an
-interactive visualization](https://cubular.t6.fyi).
+interactive visualization][cubular].
 
 If you'd like to read about how it's solved, I've written a long detailed
 explanation with interactive illustrations of the process.
@@ -635,7 +639,12 @@ The puzzle is now [entirely solved][solved].
 
 ### Conclusion
 
-[We did it!](https://cubular.t6.fyi)
+We did it!
+
+Thanks for reading the explanation; I hope it was interesting! If you haven't
+already, I highly suggest checking out [the interactive visualization][cubular].
+If you have any questions, comments, or feedback, please leave a comment or ping
+me in chat!
 
 
 
@@ -669,8 +678,11 @@ The puzzle is now [entirely solved][solved].
 
 
 
+[main.rs]:
+https://github.com/tjjfvi/cubular/tree/main/src/main.rs
 
-
+[cubular]:
+https://cubular.t6.fyi/
 
 [solved]:
 https://cubular.t6.fyi/#solved
