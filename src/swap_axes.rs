@@ -16,16 +16,11 @@ impl<C: Cube> Cube for SwapAxes<C> {
   fn apply_move(&mut self, mut m: Move) {
     if self.from != self.to {
       m.0 = m.0.swap_axes(self.from, self.to);
-      match (self.from, self.to) {
-        (Axis::X, Axis::Z) | (Axis::Z, Axis::X) if m.1 != Axis::Y => m.2 = -m.2,
-        _ => {}
-      }
+      m.2 = -m.2;
       if m.1 == self.from {
         m.1 = self.to;
       } else if m.1 == self.to {
         m.1 = self.from;
-      } else {
-        m.2 = -m.2;
       }
     }
     self.cube.apply_move(m)

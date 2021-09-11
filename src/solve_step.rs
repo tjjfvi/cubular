@@ -86,6 +86,7 @@ impl PosClass {
       Self::Active { source, moves, .. } => {
         *source = source.swap_axes(from, to);
         for m in moves.iter_mut() {
+          m.2 = -m.2;
           m.0 = m.0.swap_axes(from, to);
           if m.1 == from {
             m.1 = to;
@@ -93,7 +94,6 @@ impl PosClass {
             m.1 = from;
           } else {
             m.1;
-            m.2 = -m.2;
           }
         }
       }
@@ -110,22 +110,21 @@ impl PosClass {
         *source = source.rotate(axis, amount, max);
         for m in moves.iter_mut() {
           m.0 = m.0.rotate(axis, amount, max);
+          if match (axis, amount) {
+            (Axis::X, 1) | (Axis::Y, 3) => m.1 == Axis::Z,
+            (Axis::Y, 1) | (Axis::Z, 3) => m.1 == Axis::X,
+            (Axis::Z, 1) | (Axis::X, 3) => m.1 == Axis::Y,
+            (_, _) => m.1 != axis,
+          } {
+            m.2 = -m.2;
+          }
           if amount != 2 {
             m.1 = match (axis, m.1) {
               (Axis::Y, Axis::Z) | (Axis::Z, Axis::Y) => Axis::X,
-              (Axis::X, Axis::Z) | (Axis::Z, Axis::X) => Axis::Y,
+              (Axis::Z, Axis::X) | (Axis::X, Axis::Z) => Axis::Y,
               (Axis::X, Axis::Y) | (Axis::Y, Axis::X) => Axis::Z,
               _ => axis,
             };
-          }
-          if m.1
-            == match axis {
-              Axis::X => Axis::Y,
-              Axis::Y => Axis::Z,
-              Axis::Z => Axis::X,
-            }
-          {
-            m.2 = -m.2;
           }
         }
       }

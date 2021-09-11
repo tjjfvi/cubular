@@ -20,7 +20,7 @@ impl SolveStep for SolveInnerCross {
     }
     cube.apply_thin_move(Move(Pos(2, 2, from.2), Axis::Z, f(from) - f(to)));
     if to.2 != from.2 {
-      cube.apply_thin_move(Move(Pos(2, to.1, 2), Axis::Y, (to.0 + to.2 - 1) as i8 % 4));
+      cube.apply_thin_move(Move(Pos(2, to.1, 2), Axis::Y, -((to.0 + to.2 - 1) as i8)));
     }
   }
   fn classify<C: Cube>(&self, _cube: &C, pos: Pos) -> PosClass {
@@ -43,10 +43,10 @@ impl SolveStep for SolveInnerCross {
         index: 0,
         source: Pos(1, y, 1),
         moves: vec![
-          Move(Pos(2, y, 1), Axis::Y, 1),
-          Move(Pos(1, y, 2), Axis::Y, -1),
-          Move(Pos(2, y, 1), Axis::Y, -1),
           Move(Pos(1, y, 2), Axis::Y, 1),
+          Move(Pos(2, y, 1), Axis::Y, -1),
+          Move(Pos(1, y, 2), Axis::Y, -1),
+          Move(Pos(2, y, 1), Axis::Y, 1),
         ],
       },
       Pos(2, 2, z) => PosClass::Active {

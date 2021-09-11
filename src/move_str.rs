@@ -71,6 +71,6 @@ pub fn get_compat_move_str(m: &Move) -> String {
       Axis::Y => Axis::Z,
       Axis::Z => Axis::Y,
     },
-    if m.1 == Axis::Z { -m.2 } else { m.2 },
+    if m.1 == Axis::X { m.2 } else { -m.2 },
   ))
 }

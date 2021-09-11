@@ -77,7 +77,7 @@ static T_PERMUTATION: [Move; 14] = [
   Move(Pos(3, 2, 2), Axis::X, 1),  // R'
   Move(Pos(2, 2, 1), Axis::Z, -1), // U'
   Move(Pos(3, 2, 2), Axis::X, 1),  // R'
-  Move(Pos(2, 3, 2), Axis::Y, 1),  // F
+  Move(Pos(2, 3, 2), Axis::Y, -1), // F
   Move(Pos(3, 2, 2), Axis::X, 2),  // R2
   Move(Pos(2, 2, 1), Axis::Z, -1), // U'
   Move(Pos(3, 2, 2), Axis::X, 1),  // R'
@@ -85,5 +85,5 @@ static T_PERMUTATION: [Move; 14] = [
   Move(Pos(3, 2, 2), Axis::X, -1), // R
   Move(Pos(2, 2, 1), Axis::Z, 1),  // U
   Move(Pos(3, 2, 2), Axis::X, 1),  // R'
-  Move(Pos(2, 3, 2), Axis::Y, -1), // F'
+  Move(Pos(2, 3, 2), Axis::Y, 1),  // F'
 ];

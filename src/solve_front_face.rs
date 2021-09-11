@@ -16,13 +16,13 @@ impl SolveStep for SolveFrontFace {
           source: Pos(size.0 - 4 + size.1 - y, size.1 - 1, 5 + x - size.0),
           moves: vec![
             Move(Pos(size.0 - 2, size.1 - 2, 1), Axis::X, 1),
-            Move(Pos(size.0 - 2, size.1 - 2, 1), Axis::Y, 1),
+            Move(Pos(size.0 - 2, size.1 - 2, 1), Axis::Y, -1),
             Move(
               Pos(size.0 + size.1 - 5 - y, size.1 - 2, 4 + x - size.0),
               Axis::Y,
-              -1,
+              1,
             ),
-            Move(Pos(size.0 - 2, size.1 - 2, 1), Axis::Y, -1),
+            Move(Pos(size.0 - 2, size.1 - 2, 1), Axis::Y, 1),
             Move(Pos(size.0 - 2, size.1 - 2, 1), Axis::X, -1),
           ],
         }
@@ -43,16 +43,16 @@ impl SolveStep for SolveFrontFace {
           index,
           source: Pos(size.0 - 1, y, 5 + x - size.0),
           moves: vec![
-            Move(Pos(size.0 - 2, y + 1, 1), Axis::Y, 1),
-            Move(Pos(size.0 - 2, y + 1, 4 + x - size.0), Axis::Y, -1),
             Move(Pos(size.0 - 2, y + 1, 1), Axis::Y, -1),
+            Move(Pos(size.0 - 2, y + 1, 4 + x - size.0), Axis::Y, 1),
+            Move(Pos(size.0 - 2, y + 1, 1), Axis::Y, 1),
           ],
         }
       } else {
         PosClass::Active {
           index,
           source: pos + Pos(0, 0, 2),
-          moves: vec![Move(pos + Pos(1, 1, 1), Axis::Y, 1)],
+          moves: vec![Move(pos + Pos(1, 1, 1), Axis::Y, -1)],
         }
       }
     }

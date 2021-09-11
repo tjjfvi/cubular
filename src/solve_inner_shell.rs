@@ -50,8 +50,8 @@ impl SolveStep for SolveInnerShell {
             let (rot_axis, rot_dir) = match (from_axis, to_axis) {
               (Axis::X, Axis::Y) => (Axis::Z, 1),
               (Axis::Y, Axis::X) => (Axis::Z, -1),
-              (Axis::X, Axis::Z) => (Axis::Y, 1),
-              (Axis::Z, Axis::X) => (Axis::Y, -1),
+              (Axis::Z, Axis::X) => (Axis::Y, 1),
+              (Axis::X, Axis::Z) => (Axis::Y, -1),
               (Axis::Y, Axis::Z) => (Axis::X, 1),
               (Axis::Z, Axis::Y) => (Axis::X, -1),
               _ => unreachable!(),
@@ -86,7 +86,7 @@ impl SolveStep for SolveInnerShell {
           }
           cube.apply_move(Move(center, Axis::Z, f(from) - f(to)));
           if to.2 != from.2 {
-            cube.apply_move(Move(center, Axis::Y, (to.0 + to.2 - 1) as i8 % 4));
+            cube.apply_move(Move(center, Axis::Y, -((to.0 + to.2 - 1) as i8)));
           }
         }
       }
@@ -101,8 +101,9 @@ impl SolveStep for SolveInnerShell {
         let mut from = from;
         while from.2 != to.2 {
           let axis = if from.0 == 2 { Axis::Y } else { Axis::X };
-          cube.apply_move(Move(center, axis, 1));
-          from = from.rotate(axis, 1, 5);
+          let dir = if axis == Axis::Y { -1 } else { 1 };
+          cube.apply_move(Move(center, axis, dir));
+          from = from.rotate(axis, dir, 5);
         }
         self.move_pool(cube, from, to);
       } else {
@@ -122,6 +123,7 @@ impl SolveStep for SolveInnerShell {
     }
   }
   fn classify<C: Cube>(&self, cube: &C, pos: Pos) -> PosClass {
+    // dbg!(pos);
     match pos {
       // move the center into position at the end
       Pos(2, 2, 2) => PosClass::Active {
@@ -135,10 +137,14 @@ impl SolveStep for SolveInnerShell {
           .classify(cube, pos.rotate(Axis::Z, 1, 5))
           .tap_mut(|x| x.rotate(Axis::Z, -1, 5)),
         p if p.2 >= 1 => {
-          let axis = if p.1 == 0 { Axis::X } else { Axis::Y };
+          let (axis, dir) = if p.1 == 0 {
+            (Axis::X, 1)
+          } else {
+            (Axis::Y, -1)
+          };
           self
-            .classify(cube, pos.rotate(axis, 1, 5))
-            .tap_mut(|x| x.rotate(axis, -1, 5))
+            .classify(cube, pos.rotate(axis, dir, 5))
+            .tap_mut(|x| x.rotate(axis, -dir, 5))
         }
         p if p.1 > p.0 => self
           .classify(cube, pos.swap_axes(Axis::X, Axis::Y))
@@ -156,9 +162,9 @@ impl SolveStep for SolveInnerShell {
           source: Pos(2, 3, 2),
           moves: vec![
             Move(Pos(1, 1, 1), Axis::Z, 1),
-            Move(Pos(1, 1, 1), Axis::Y, 1),
-            Move(Pos(2, 2, 2), Axis::Z, 2),
             Move(Pos(1, 1, 1), Axis::Y, -1),
+            Move(Pos(2, 2, 2), Axis::Z, 2),
+            Move(Pos(1, 1, 1), Axis::Y, 1),
             Move(Pos(1, 1, 1), Axis::Z, -1),
           ],
         },
@@ -168,9 +174,9 @@ impl SolveStep for SolveInnerShell {
           moves: vec![
             Move(Pos(2, 3, 2), Axis::Z, -1),
             Move(Pos(1, 1, 1), Axis::Z, 1),
-            Move(Pos(1, 1, 1), Axis::Y, 1),
-            Move(Pos(2, 3, 2), Axis::Z, 1),
             Move(Pos(1, 1, 1), Axis::Y, -1),
+            Move(Pos(2, 3, 2), Axis::Z, 1),
+            Move(Pos(1, 1, 1), Axis::Y, 1),
             Move(Pos(1, 1, 1), Axis::Z, -1),
           ],
         },

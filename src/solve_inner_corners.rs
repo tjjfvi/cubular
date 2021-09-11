@@ -23,7 +23,7 @@ impl SolveStep for SolveInnerCorners {
     let initial_moves = match pos {
       Pos(1, 1, 1) => return PosClass::Pool, // once all of the others are solved, this must be too
       Pos(3, 3, 1) => vec![],
-      Pos(1, 3, 1) => vec![Move(Pos(2, 3, 2), Axis::Y, 1)],
+      Pos(1, 3, 1) => vec![Move(Pos(2, 3, 2), Axis::Y, -1)],
       Pos(3, 1, 1) => vec![Move(Pos(3, 2, 2), Axis::X, 1)],
       Pos(x, y, 3) => vec![
         Move(
@@ -43,7 +43,7 @@ impl SolveStep for SolveInnerCorners {
             }
           },
         ),
-        Move(Pos(2, 3, 2), Axis::Y, -1),
+        Move(Pos(2, 3, 2), Axis::Y, 1),
       ],
       _ => unreachable!(),
     };
@@ -62,7 +62,7 @@ impl SolveStep for SolveInnerCorners {
 }
 
 static Y_PERMUTATION: [Move; 17] = [
-  Move(Pos(2, 3, 2), Axis::Y, 1),  // F
+  Move(Pos(2, 3, 2), Axis::Y, -1), // F
   Move(Pos(3, 2, 2), Axis::X, -1), // R
   Move(Pos(2, 2, 1), Axis::Z, -1), // U'
   Move(Pos(3, 2, 2), Axis::X, 1),  // R'
@@ -70,13 +70,13 @@ static Y_PERMUTATION: [Move; 17] = [
   Move(Pos(3, 2, 2), Axis::X, -1), // R
   Move(Pos(2, 2, 1), Axis::Z, 1),  // U
   Move(Pos(3, 2, 2), Axis::X, 1),  // R'
-  Move(Pos(2, 3, 2), Axis::Y, -1), // F'
+  Move(Pos(2, 3, 2), Axis::Y, 1),  // F'
   Move(Pos(3, 2, 2), Axis::X, -1), // R
   Move(Pos(2, 2, 1), Axis::Z, 1),  // U
   Move(Pos(3, 2, 2), Axis::X, 1),  // R'
   Move(Pos(2, 2, 1), Axis::Z, -1), // U'
   Move(Pos(3, 2, 2), Axis::X, 1),  // R'
-  Move(Pos(2, 3, 2), Axis::Y, 1),  // F
+  Move(Pos(2, 3, 2), Axis::Y, -1), // F
   Move(Pos(3, 2, 2), Axis::X, -1), // R
-  Move(Pos(2, 3, 2), Axis::Y, -1), // F'
+  Move(Pos(2, 3, 2), Axis::Y, 1),  // F'
 ];

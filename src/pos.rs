@@ -19,7 +19,7 @@ impl Pos {
     for _ in 0..(amount.rem_euclid(4)) {
       cur = match axis {
         Axis::X => cur.swap_axes(Axis::Y, Axis::Z).flip(Axis::Y, max),
-        Axis::Y => cur.swap_axes(Axis::X, Axis::Z).flip(Axis::X, max),
+        Axis::Y => cur.swap_axes(Axis::Z, Axis::X).flip(Axis::Z, max),
         Axis::Z => cur.swap_axes(Axis::X, Axis::Y).flip(Axis::X, max),
       };
     }
