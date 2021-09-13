@@ -1,4 +1,14 @@
 
+# cubular
+
+An answer to the [Totally Cubular][totally-cubular] challenge on the Code Golf
+Stack Exchange:
+> Create a program or function to unjumble a 9x9x9 cube of digits by rotating
+> individual 3x3 cubes within it.
+
+[totally-cubular]:
+https://codegolf.stackexchange.com/questions/108170/totally-cubular
+
 # Rust, 38250 bytes
 
 *Because it's "enough of a challenge as it is" I didn't "make it
