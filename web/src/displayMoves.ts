@@ -31,7 +31,7 @@ export default () => {
     }
   }
 
-  title.innerText = name || (hash === hashData ? "" : hash)
+  caption.innerText = name || (hash === hashData ? "" : hash)
 
   cube.cancel_queued_moves();
 
@@ -41,7 +41,7 @@ export default () => {
     return true
   }
 
-  caption.innerText = "Goal";
+  title.innerText = "Goal";
   moves.map(applyMove);
   cube.flush_all_moves();
 
@@ -69,24 +69,24 @@ export default () => {
         moves.slice().reverse().map(unapplyMove);
         movePhase = -1;
         moveIndex = 0;
-        caption.innerText = "Start";
+        title.innerText = "Start";
       }
       else if (movePhase === 1 && moveIndex === moves.length){
         movePhase = 0;
         moveIndex = moves.length;
-        caption.innerText = "End";
+        title.innerText = "End";
       }
       else if (movePhase === 1) {
         applyMove(moves[moveIndex]);
-        caption.style.textDecoration = "line-through"
+        title.style.textDecoration = "line-through"
       }
       else if (movePhase === 2) {
         movePhase = 0;
         moveIndex++;
       }
       if(movePhase === 0){
-        caption.innerText = moves[moveIndex] || "End/Goal"
-        caption.style.textDecoration = "none"
+        title.innerText = moves[moveIndex] || "End/Goal"
+        title.style.textDecoration = "none"
       }
     } else if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
       e.preventDefault();
@@ -95,19 +95,19 @@ export default () => {
         movePhase++
       else if (movePhase === 0) {
         unapplyMove(moves[moveIndex]);
-        caption.style.textDecoration = "none"
+        title.style.textDecoration = "none"
       }
       if (movePhase === -1 && moveIndex) {
         movePhase = 1;
         moveIndex--;
-        caption.innerText = moves[moveIndex] || ""
-        caption.style.textDecoration = "line-through"
+        title.innerText = moves[moveIndex] || ""
+        title.style.textDecoration = "line-through"
       }
       if (movePhase === -2) {
         moves.map(applyMove);
         moveIndex = moves.length;
         movePhase = 1;
-        caption.innerText = "Goal";
+        title.innerText = "Goal";
       }
     }
     cube.flush_all_moves();

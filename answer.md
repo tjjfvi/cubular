@@ -122,8 +122,18 @@ b 2 c 3 d 4 e 5 f
 ### Links
 
 Throughout this explanation, links to cube states will be used to illustrate the
-process. This is [the solved state of the cube][solved], and this is an [example
-of a small algorithm][stage1-step1-A].
+process. Here's [a scrambled cube][unsolved], and [a solved cube][solved].
+
+Some links will illustrate a set of moves. First, it will show the goal state,
+followed by the start state of the cube. Then, for each move, it will first
+highlight the positions that will be affected, and then show the result of the
+move. Here's an example of [a small algorithm][small-algorithm].
+
+Additionally, some links with moves will emphasize certain pieces. The bordered
+pieces are the focus, and the highlighted pieces are pieces that will/must
+remain unchanged. Here's an example of [the previous algorithm with
+highlights][small-algorithm-highlighted]. Sometimes, only a subset of the
+unchanged pieces will be highlighted, to make it easier to track the rotations.
 
 ### Approach to Solving
 
@@ -507,13 +517,21 @@ The partition for this step is as follows:
   center piece.
 - ['pool'][stage3-step1-pool]: all of the corners and edges.
 
+Here's a diagram of the positions like in the previous stage.
+```
+X · +   · # ·   + · +
+· A ·   # # #   · # ·
++ · +   · # ·   + · +
+```
+
 Moving pieces between 'pool' positions is rather simple. We can use thin moves
 to rotate the corners and edges of a face of the 3×3×3 without affecting the
 center cross. Here's an example of [moving one of the
 corners][stage3-step1-pool-example].
 
 To move pieces from a 'pool' position to an 'active' position, we use [a
-variation of `INTO_CENTER` that uses thin moves][stage3-step1-pool-to-active].
+planar variation of `INTO_CENTER` that uses thin
+moves][stage3-step1-pool-to-active] (`THINTO_CENTER`).
 
 ### Similarity to a Rubik's Cube
 
@@ -556,9 +574,9 @@ same parity will have been solved.
 
 We'll focus on this `A` position; other `A` positions are solved similarly:
 ```
-· · ·   · · ·   · · ·
-· · ·   · · ·   · · ·
-· A ·   · · ·   · · ·
+· # ·   # # #   · # ·
+# # +   # # #   # # #
+· A ·   # # #   · # ·
 ```
 
 Since the `C` position is the only 'pool' position, our source position will
@@ -569,9 +587,9 @@ To solve this `A` position, we'll execute the following procedure:
 2. Swap the pieces in the `B` and `C` positions.
 3. Reverse the moves in #1.
 
-To accomplish \#2, we'll use an algortihm known as the T Permutation, which
-swaps the pieces in the `B` and `C` positions, and swaps the pieces in the `P`
-and `Q` positions:
+To accomplish \#2, we'll use an algortihm known as the
+[T Permutation][t-permutation], which swaps the pieces in the `B` and `C`
+positions, and swaps the pieces in the `P` and `Q` positions:
 ```
 · · P   · · ·   · · ·
 B · C   · · ·   · · ·
@@ -589,12 +607,13 @@ keep swapping back and forth, but we don't care, as they are both unsolved.
 Finally, to solve the `B` and `C` positions, if they're not already solved, we'll
 apply the T Permutation to swap them.
 
+*Note: usually, Old Pochmann will involve two additional algorithms for this
+step, the [Ja][ja-permutation] and [Jb][jb-permutation] permutations. These are
+used to simplify some of the swaps, but are not strictly necessary.*
+
 ### Stage 3, Step 3
 
 This step is rather similar to Step 2.
-
-Note that the `P` and `Q` positions have already been solved, and are the same
-value when solved. Thus, we don't care if `P` and `Q` are ultimately swapped.
 
 In this step, the remainder of the cube will be divided as follows, where `A`
 and `B` represent 'active' positions, and `C` represents the singular 'pool'
@@ -611,18 +630,18 @@ same parity will have been solved.
 
 We'll focus on this `A` position; other `A` positions are solved similarly:
 ```
-· · ·   · · ·   · · ·
-· · ·   · · ·   · · ·
-A · ·   · · ·   · · ·
++ # #   # # #   # # #
+# # #   # # #   # # #
+A # #   # # #   # # #
 ```
 To solve this `A` position, we'll execute the following procedure:
 1. Use thin moves to rotate the piece in this `A` position to the `B` position.
 2. Swap the pieces in the `B` and `C` positions.
 3. Reverse the moves in #1.
 
-To accomplish #2, we'll use an algorithm known as the Y Permutation, which swaps
-the pieces in the`B` and `C` positions, and swaps the pieces in the `P` and `Q`
-positions: 
+To accomplish #2, we'll use an algorithm known as the
+[Y Permutation][y-permutation], which swaps the pieces in the`B` and `C`
+positions, and swaps the pieces in the `P` and `Q` positions:
 ```
 C P ·   · · ·   · · ·
 Q · ·   · · ·   · · ·
@@ -632,16 +651,24 @@ Q · ·   · · ·   · · ·
 Thus, the above procedure will swap the pieces in the `B` and `C` positions and
 swap the pieces in the `P` and `Q` positions.
 
+Note that the `P` and `Q` positions have already been solved, and are the same
+value when solved. Thus, we don't care if `P` and `Q` are ultimately swapped.
+
 Finally, to solve the `B` and `C` positions, if they're not already solved, we'll
 apply the Y Permutation to swap them.
 
 The puzzle is now [entirely solved][solved].
 
+*Note: in the Old Pochmann method, there is usually a step in between solving
+the edges and corners: possibly using the [Ra Permutation][ra-permutation] to
+resolve parity. However, because the edges that the Y Permutation swaps are of
+equal value, this is unnecessary in our case.*
+
 ### Conclusion
 
 We did it!
 
-Thanks for reading the explanation; I hope it was interesting! If you haven't
+Thanks for reading the explanation; I hope you enjoyed it! If you haven't
 already, I highly suggest checking out [the interactive visualization][cubular].
 If you have any questions, comments, or feedback, please leave a comment or ping
 me in chat!
@@ -686,6 +713,15 @@ https://cubular.t6.fyi/
 
 [solved]:
 https://cubular.t6.fyi/#solved
+
+[unsolved]:
+https://cubular.t6.fyi/#unsolved
+
+[small-algorithm]:
+https://cubular.t6.fyi/#small-algorithm
+
+[small-algorithm-highlighted]:
+https://cubular.t6.fyi/#small-algorithm-highlighted
 
 [after-stage-1]:
 https://cubular.t6.fyi/#after-stage-1
@@ -777,14 +813,29 @@ https://cubular.t6.fyi/#stage3-step1-pool-example
 [stage3-step1-pool-to-active]:
 https://cubular.t6.fyi/#stage3-step1-pool-to-active
 
+[after-stage3-step1]:
+https://cubular.t6.fyi/#after-stage3-step1
+
 [old-pochmann-1]:
 https://www.speedsolving.com/wiki/index.php/Classic_Pochmann
 
 [old-pochmann-2]:
 https://ruwix.com/the-rubiks-cube/how-to-solve-the-rubiks-cube-blindfolded-tutorial/
 
-[after-stage3-step1]:
-https://cubular.t6.fyi/#after-stage3-step1
-
 [stage3-step1-A]:
 https://cubular.t6.fyi/#stage3-step1-A
+
+[t-permutation]:
+https://ruwix.com/the-rubiks-cube/how-to-solve-the-rubiks-cube-blindfolded-tutorial/#:~:text=T%20Permutation
+
+[ja-permutation]:
+https://ruwix.com/the-rubiks-cube/how-to-solve-the-rubiks-cube-blindfolded-tutorial/#:~:text=Ja%20Permutation
+
+[ra-permutation]:
+https://ruwix.com/the-rubiks-cube/how-to-solve-the-rubiks-cube-blindfolded-tutorial/#:~:text=Jb%20Permutation
+
+[jb-permutation]:
+https://ruwix.com/the-rubiks-cube/how-to-solve-the-rubiks-cube-blindfolded-tutorial/#:~:text=Jb%20Permutation
+
+[y-permutation]:
+https://ruwix.com/the-rubiks-cube/how-to-solve-the-rubiks-cube-blindfolded-tutorial/#:~:text=T%20Permutation
