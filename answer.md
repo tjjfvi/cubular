@@ -1,5 +1,5 @@
 
-# Rust, 38323 bytes
+# Rust, 38250 bytes
 
 *Because it's "enough of a challenge as it is" I didn't "make it
 [tag:code-golf] just to spice it up a bit more".*
@@ -625,8 +625,8 @@ A · B   · · ·   A · A
 ```
 
 Like the previous step, we'll first solve all `A` positions, and then solve the
-`B` position. Then, the `C` position must be solved, as all other pieces of the
-same parity will have been solved.
+`B` position. As before, nothing needs to be done to solve the `C` position, as
+all other pieces of the same parity will have been solved. 
 
 We'll focus on this `A` position; other `A` positions are solved similarly:
 ```
@@ -649,10 +649,8 @@ Q · ·   · · ·   · · ·
 ```
 
 Thus, the above procedure will swap the pieces in the `B` and `C` positions and
-swap the pieces in the `P` and `Q` positions.
-
-Note that the `P` and `Q` positions have already been solved, and are the same
-value when solved. Thus, we don't care if `P` and `Q` are ultimately swapped.
+swap the pieces in the `P` and `Q` positions. The `P` and `Q` positions were
+previously solved and have the same solved value, so swapping them does nothing.
 
 Finally, to solve the `B` and `C` positions, if they're not already solved, we'll
 apply the Y Permutation to swap them.
