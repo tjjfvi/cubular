@@ -21,7 +21,7 @@ The solution is hosted [on GitHub][main.rs]. Running `cargo run` in the root
 directory will take the cube from stdin and output a list of moves that solves
 the inputted cube. Input can be in any of the forms from the question and this
 answer. The output will use a modified coordinate system by default, but can be
-changed to use the question's coordinate system by changing line 68.
+changed to use the question's coordinate system by changing line 27.
 
 If you'd like to play with the cube and see how it's solved, I've created [an
 interactive visualization][cubular].
