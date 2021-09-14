@@ -1,10 +1,13 @@
 
 # cubular
 
-An answer to the [Totally Cubular][totally-cubular] challenge on the Code Golf
+An [answer] to the [Totally Cubular][totally-cubular] challenge on the Code Golf
 Stack Exchange:
 > Create a program or function to unjumble a 9x9x9 cube of digits by rotating
 > individual 3x3 cubes within it.
+
+[answer]:
+https://codegolf.stackexchange.com/a/235298/87606
 
 [totally-cubular]:
 https://codegolf.stackexchange.com/questions/108170/totally-cubular
