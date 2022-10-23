@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>cubular</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inconsolata&display=swap');
+
+    body {
+      margin: 0;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      font-family: "Inconsolata", monospace;
+      font-size: 15px;
+      background-color: #151820;
+      color: #bdc3c7;
+    }
+
+    * {
+      outline: none;
+    }
+
+    #cube {
+      grid-area: cube;
+      flex-grow: 1;
+      flex-basis: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    #cube span.c0 {
+      color: #d63031;
+    }
+
+    #cube span.c1 {
+      color: #e67e22;
+    }
+
+    #cube span.c2 {
+      color: #f39c12;
+    }
+
+    #cube span.c3 {
+      color: #f1c40f;
+    }
+
+    #cube span.c4 {
+      color: #2ecc71;
+    }
+
+    #cube span.c5 {
+      color: #27ae60;
+    }
+
+    #cube span.c6 {
+      color: #3498db;
+    }
+
+    #cube span.c7 {
+      color: #2980b9;
+    }
+
+    #cube span.c8 {
+      color: #8e44ad;
+    }
+
+    #cube span.solved {
+      opacity: 1;
+    }
+
+    #cube span.unsolved {
+      opacity: .6;
+    }
+
+    #cube span.fade {
+      opacity: .5;
+    }
+
+    #cube span.dim {
+      opacity: .2;
+    }
+
+    #cube span.hide {
+      opacity: .1;
+    }
+
+    #cube span.mark:before,
+    #cube span.mark2:before {
+      content: "";
+      position: absolute;
+      width: 16px;
+      height: 15px;
+      background-color: #454850;
+      opacity: .5;
+      z-index: -1;
+      transform: translate(-3.5px, .5px);
+    }
+
+    #cube span.mark2:before {
+      border: 1px solid #bdc3c7;
+      box-sizing: border-box;
+    }
+
+    #cube>span {
+      height: 15px;
+    }
+
+    #cube textarea {
+      font-family: "Inconsolata", monospace;
+      font-size: inherit;
+      border: none;
+      resize: none;
+      width: auto;
+      height: auto;
+    }
+
+    #console {
+      grid-area: console;
+      flex-grow: 1;
+      flex-basis: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: auto;
+    }
+
+    #console #logs {
+      display: flex;
+      flex-direction: column;
+      white-space: pre;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="cube">
+    <span id="title"></span>
+    <pre contenteditable="false"></pre>
+    <span id="caption"></span>
+  </div>
+  <div id="console">
+    <div id="header">
+      <br>
+      <span>cubular v1.0.0 — <a style="color: inherit" href="https://github.com/tjjfvi/cubular#cubular">https://github.com/tjjfvi/cubular</a></span>
+    </div>
+    <div id="logs"></div>
+    <div id="input">
+      <br>
+      &gt;&nbsp;<span contenteditable></span>
+      <br>
+      <br>
+      <br>
+      <br>
+      <br>
+    </div>
+  </div>
+
+  <script src="index.js" type="module"></script>
+</body>
+
+</html>
