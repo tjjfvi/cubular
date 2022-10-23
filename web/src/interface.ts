@@ -199,8 +199,6 @@ export default () => {
   }
   function getHelpText() {
     return `
-cubular v1.0.0
-
 Available commands:
   help               Print this message.
   demo               Scramble and solve the cube.
